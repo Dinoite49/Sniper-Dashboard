@@ -3,132 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SNIPER TERMINAL v7.2 | ULTIMATE EDITION</title>
-    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+    <title>SNIPER v7.5 | MACRO INTELLIGENCE</title>
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <style>
         :root { --bg: #020617; --card: #0f172a; --accent: #00ff88; --red: #ff4b2b; --text: #f8fafc; --gold: #fbbf24; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
-        /* AUTH OVERLAY */
+        
         #auth-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 10000; }
-        .login-card { background: var(--card); padding: 45px; border-radius: 24px; border: 1px solid var(--accent); text-align: center; width: 95%; max-width: 420px; }
-        .btn-google { background: #fff; color: #000; border: none; width: 100%; padding: 16px; border-radius: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 25px; transition: 0.3s; }
-        /* INTERFACE */
-        .sidebar { width: 75px; background: #010409; border-right: 1px solid #1e293b; display: flex; flex-direction: column; align-items: center; padding: 25px 0; gap: 20px; }
-        .asset-btn { width: 48px; height: 48px; border-radius: 12px; border: 1px solid #334155; background: var(--card); color: #94a3b8; font-size: 11px; font-weight: bold; cursor: pointer; }
+        .login-card { background: var(--card); padding: 40px; border-radius: 24px; border: 1px solid var(--accent); text-align: center; width: 95%; max-width: 400px; }
+        
+        .sidebar { width: 75px; background: #010409; border-right: 1px solid #1e293b; display: flex; flex-direction: column; align-items: center; padding: 25px 0; gap: 15px; }
+        .asset-btn { width: 55px; height: 50px; border-radius: 12px; border: 1px solid #334155; background: var(--card); color: #94a3b8; font-size: 10px; font-weight: bold; cursor: pointer; }
         .asset-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0, 255, 136, 0.05); }
+
         .main-content { flex: 1; display: flex; flex-direction: column; }
-        .header { height: 65px; border-bottom: 1px solid #1e293b; display: flex; align-items: center; padding: 0 25px; justify-content: space-between; }
-        .viewport { flex: 1; display: grid; grid-template-columns: 1fr 320px; }
-        #chart-container { width: 100%; height: 100%; position: relative; }
-        .intel-sidebar { background: var(--card); border-left: 1px solid #1e293b; padding: 25px; overflow-y: auto; }
+        .header { height: 65px; border-bottom: 1px solid #1e293b; display: flex; align-items: center; padding: 0 20px; justify-content: space-between; }
+        .viewport { flex: 1; display: grid; grid-template-columns: 1fr 350px; }
+        #chart-widget-container { width: 100%; height: 100%; }
+
+        .intel-sidebar { background: var(--card); border-left: 1px solid #1e293b; padding: 20px; overflow-y: auto; }
         .mentor-bubble { background: rgba(0, 255, 136, 0.03); border: 1px solid rgba(0, 255, 136, 0.1); padding: 18px; border-radius: 14px; font-size: 13px; line-height: 1.6; color: #cbd5e1; }
-        .btn-ai { background: linear-gradient(135deg, #00ff88, #0088cc); color: #020617; border: none; width: 100%; padding: 16px; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 20px; text-transform: uppercase; }
+        .btn-ai { background: linear-gradient(135deg, #00ff88, #0088cc); color: #020617; border: none; width: 100%; padding: 16px; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 20px; text-transform: uppercase; }
+
+        .news-tag { font-size: 10px; color: var(--gold); background: rgba(251, 191, 36, 0.1); padding: 2px 6px; border-radius: 4px; margin-bottom: 5px; display: inline-block; }
     </style>
 </head>
 <body>
 
     <div id="auth-overlay">
         <div class="login-card">
-            <h1 style="color:var(--accent); font-size: 28px;">SNIPER v7.2</h1>
-            <p style="font-size:13px; color:#64748b; margin-top: 8px;">Terminal de Inteligência & IA Mentor</p>
-            <button class="btn-google" onclick="handleAuth()">
-                <img src="https://img.icons8.com/color/24/000000/google-logo.png" alt="Google"/>
-                Entrar com Google
-            </button>
+            <h1 style="color:var(--accent); font-size: 28px;">SNIPER v7.5 PRO</h1>
+            <p style="font-size: 12px; color: #64748b; margin-bottom: 20px;">Macro & Sentiment Intelligence</p>
+            <button onclick="handleAuth()" style="background:#fff; color:#000; border:none; width:100%; padding:15px; border-radius:12px; font-weight:bold; cursor:pointer;">ACESSAR SISTEMA</button>
         </div>
     </div>
 
     <nav class="sidebar">
-        <button class="asset-btn active" onclick="changeAsset('EURUSD')">EUR</button>
-        <button class="asset-btn" onclick="changeAsset('XAUUSD')">GOLD</button>
-        <button class="asset-btn" onclick="changeAsset('DXY')">DXY</button>
+        <button class="asset-btn active" onclick="updateChart('FX:EURUSD')">EUR</button>
+        <button class="asset-btn" onclick="updateChart('FX:GBPUSD')">GBP</button>
+        <button class="asset-btn" onclick="updateChart('OANDA:XAUUSD')">GOLD</button>
+        <button class="asset-btn" onclick="updateChart('BINANCE:BTCUSDT')">BTC</button>
+        <button class="asset-btn" onclick="updateChart('CAPITALCOM:DXY')">DXY</button>
     </nav>
 
     <div class="main-content">
         <header class="header">
-            <div>
-                <h2 id="pair-display" style="color:var(--accent); font-size: 20px;">EUR / USD</h2>
-                <small id="user-info" style="color: #64748b; margin-left: 15px;">Aguardando sinal...</small>
-            </div>
-            <div style="font-size: 10px; color: var(--accent); text-align: right;">
-                SUPABASE: CONNECTED ●<br>
-                GEMINI AI: READY ●
-            </div>
+            <h2 id="pair-display" style="color:var(--accent); font-size: 20px;">EURUSD</h2>
+            <div style="font-size: 10px; color: var(--accent); text-align: right;">NEWS-API: ACTIVE ●<br>GEMINI 1.5: READY ●</div>
         </header>
 
         <div class="viewport">
-            <div id="chart-container"></div>
+            <div id="chart-widget-container"></div>
             <aside class="intel-sidebar">
-                <small style="color:var(--gold); font-weight: 800; text-transform: uppercase; font-size: 10px;">Análise Estratégica IA</small>
-                <div id="mentor-txt" class="mentor-bubble" style="margin-top:12px;">
-                    Sr. Fábio, o sistema está online. Clique para processar a leitura institucional dos ativos.
-                </div>
-                <button class="btn-ai" onclick="getAiAnalysis()">Solicitar Análise Gemini</button>
+                <span class="news-tag" id="sentiment-status">AGUARDANDO ANÁLISE MACRO</span>
+                <div id="mentor-txt" class="mentor-bubble">Inicie a análise para que o Gemini leia as notícias globais e cruze com o gráfico.</div>
+                <button class="btn-ai" onclick="runMacroAnalysis()">Análise Macro & Sniper</button>
             </aside>
         </div>
     </div>
 
     <script>
         const SNIPER = {
-            CLIENT_ID: '951822007156-0ncahhsljnobtsnbladbh5b6j0q5i1m9.apps.googleusercontent.com',
             GEMINI_API: 'AIzaSyD1IjhkGoQzoVtcmDws-sIbxT7QTlo-eJs',
-            TWELVE_API: '0de74dfc9ff0420799dd0700d110007b',
-            SUPABASE_URL: 'https://vlobwhsynmnnwkmrpmxm.supabase.co',
-            SUPABASE_KEY: 'sb_publishable_D2rXXaNTkSAvjhh71KA9qg_9kL5EojL',
+            NEWS_API: '821b7bb1311c454f9b0c92369865838c',
             TG_TOKEN: '8227143905:AAEgnLHP9obvDmNrCAySxpDQER2ukpuTi9Q',
             TG_CHATID: '6072254244'
         };
 
-        // --- AUTH & LOGIN ---
-        async function handleAuth() {
-            const mockUser = "trader_fabio@gmail.com";
-            localStorage.setItem('sniper_session', mockUser);
+        let activeSymbol = "FX:EURUSD";
+
+        function handleAuth() {
             document.getElementById('auth-overlay').style.display = 'none';
-            document.getElementById('user-info').innerText = "Sniper: " + mockUser;
-            
-            // Log de usuário no Supabase
-            fetch(`${SNIPER.SUPABASE_URL}/rest/v1/users`, {
-                method: 'POST',
-                headers: { 'apikey': SNIPER.SUPABASE_KEY, 'Authorization': `Bearer ${SNIPER.SUPABASE_KEY}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: mockUser, client_id: SNIPER.CLIENT_ID, login_time: new Date() })
+            initChart();
+        }
+
+        function initChart() {
+            new TradingView.widget({
+                "autosize": true,
+                "symbol": activeSymbol,
+                "interval": "15",
+                "theme": "dark",
+                "style": "1",
+                "locale": "br",
+                "container_id": "chart-widget-container",
+                "allow_symbol_change": true
             });
         }
 
-        // --- IA MENTOR GEMINI ---
-        async function getAiAnalysis() {
-            const mentor = document.getElementById('mentor-txt');
-            const pair = document.getElementById('pair-display').innerText;
-            mentor.innerText = "IA processando níveis institucionais...";
+        function updateChart(symbol) {
+            activeSymbol = symbol;
+            document.getElementById('pair-display').innerText = symbol.split(':')[1];
+            initChart();
+        }
 
-            const prompt = `Analise ${pair}. Considere Fibonacci 0.618 e possível falha de 5 pips para reversão. Dê uma direção objetiva para o Trader Fábio.`;
+        async function runMacroAnalysis() {
+            const mentor = document.getElementById('mentor-txt');
+            const status = document.getElementById('sentiment-status');
+            mentor.innerText = "Lendo notícias globais via NewsAPI...";
 
             try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${SNIPER.GEMINI_API}`, {
+                // 1. Capturar Manchetes
+                const newsRes = await fetch(`https://newsapi.org/v2/everything?q=${activeSymbol.split(':')[1]}&language=en&pageSize=3&apiKey=${SNIPER.NEWS_API}`);
+                const newsData = await newsRes.json();
+                const headlines = newsData.articles.map(a => a.title).join(" | ");
+
+                // 2. Enviar para Gemini
+                mentor.innerText = "Gemini filtrando Euforia vs. Realidade...";
+                const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${SNIPER.GEMINI_API}`;
+                
+                const prompt = `
+                    NOTÍCIAS DO MOMENTO: ${headlines}
+                    ATIVO: ${activeSymbol}
+                    Ação: O preço está no 0.618 de Fib.
+                    Resuma: 
+                    1. O sentimento é de euforia (varejo) ou dado macro real?
+                    2. Recomende: Sniper (Compra) ou Inversa (Venda se falhar 5 pips). 
+                    Seja curto (máximo 3 linhas).
+                `;
+
+                const res = await fetch(geminiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
                 });
-                const data = await res.json();
-                const analysis = data.candidates[0].content.parts[0].text;
-                mentor.innerHTML = `<b>RELATÓRIO MENTOR:</b><br>${analysis}`;
+
+                const gData = await res.json();
+                const veredito = gData.candidates[0].content.parts[0].text;
                 
-                // Envio Telegram
-                fetch(`https://api.telegram.org/bot${SNIPER.TG_TOKEN}/sendMessage?chat_id=${SNIPER.TG_CHATID}&text=${encodeURIComponent("ESTRATÉGIA: " + analysis)}`);
-            } catch (e) { mentor.innerText = "Erro ao conectar com Mentor AI."; }
+                status.innerText = veredito.includes("euforia") ? "⚠️ VAREJO EUFÓRICO" : "🏦 FLUXO INSTITUCIONAL";
+                mentor.innerHTML = `<b>ANÁLISE MACRO:</b><br>${veredito}`;
+                
+                // Telegram
+                fetch(`https://api.telegram.org/bot${SNIPER.TG_TOKEN}/sendMessage?chat_id=${SNIPER.TG_CHATID}&text=${encodeURIComponent("MACRO ALERT: " + veredito)}`);
+
+            } catch (e) {
+                mentor.innerHTML = `<span style="color:var(--red)">Erro no processamento Macro: ${e.message}</span>`;
+            }
         }
-
-        // --- GRÁFICO TRADINGVIEW ---
-        const chart = LightweightCharts.createChart(document.getElementById('chart-container'), {
-            layout: { background: { color: '#020617' }, textColor: '#94a3b8' },
-            grid: { vertLines: { color: '#111827' }, horzLines: { color: '#111827' } },
-            timeScale: { borderColor: '#1e293b' }
-        });
-        const candleSeries = chart.addCandlestickSeries({ upColor: '#00ff88', downColor: '#ff4b2b', borderVisible: false });
-        candleSeries.setData([{ time: '2026-02-18', open: 1.1850, high: 1.1880, low: 1.1830, close: 1.1870 }]);
-
-        function changeAsset(p) { document.getElementById('pair-display').innerText = p; }
-        if(localStorage.getItem('sniper_session')) document.getElementById('auth-overlay').style.display = 'none';
     </script>
 </body>
 </html>
