@@ -1,55 +1,298 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sniper Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sniper Intelligence Pro v4.1</title>
+    
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlNuaXBlciBJbnRlbGxpZ2VuY2UgUHJvIiwKICAic2hvcnRfbmFtZSI6ICJTbmlwZXJGWCIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDUwYTE0IiwKICAidGhlbWVfY29sb3IiOiAiIzAwZmY4OCIsCiAgImljb25zIjogW3sgInNyYyI6ICJodHRwczovL2Nkbi1pY29ucy1wbmcuZmxhdGljb24uY29tLzUxMi8yNTY4LzI1NjgyNTIucG5nIiwgInNpemVzIjogIjUxMng1MTIiLCAidHlwZSI6ICJpbWFnZS9wbmciIH1dCn0=">
+    <meta name="theme-color" content="#00ff88">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
     <style>
+        :root {
+            --bg: #050a14;
+            --card: #101a2d;
+            --accent: #00ff88;
+            --red: #ff4b2b;
+            --text: #e0e6ed;
+            --gold: #ffd700;
+            --gray: #8892b0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
         }
-        header {
-            background: #333;
-            color: #fff;
-            padding: 10px 0;
-            text-align: center;
+
+        /* BANNER DE PRIVACIDADE */
+        #cookie-banner {
+            position: fixed; bottom: 20px; left: 10px; right: 10px;
+            background: var(--card); border: 1px solid var(--accent);
+            padding: 20px; border-radius: 12px; z-index: 10001;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
         }
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            overflow: hidden;
+
+        /* TELAS DE ACESSO */
+        #login-overlay {
+            position: fixed; inset: 0; background: var(--bg);
+            display: flex; align-items: center; justify-content: center; z-index: 10000;
         }
-        footer {
-            padding: 10px;
-            text-align: center;
-            background: #333;
-            color: #fff;
+
+        .login-card {
+            background: var(--card); padding: 30px; border-radius: 15px;
+            border: 1px solid var(--accent); text-align: center; width: 90%; max-width: 350px;
         }
+
+        .input-field {
+            width: 100%; padding: 12px; margin: 10px 0; border-radius: 6px;
+            border: none; background: #1f2a44; color: #fff; font-size: 16px;
+        }
+
+        .btn-primary {
+            background: var(--accent); color: #000; border: none;
+            padding: 12px; border-radius: 6px; font-weight: bold;
+            cursor: pointer; width: 100%; transition: 0.3s;
+        }
+
+        /* DASHBOARD HEADER */
+        .header {
+            padding: 20px; border-bottom: 1px solid #1f2a44;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .status-dot { height: 8px; width: 8px; background-color: var(--accent); border-radius: 50%; display: inline-block; margin-right: 5px; animation: pulse 2s infinite; }
+        
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        /* CARDS E GRIDS */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 15px; padding: 15px; }
+
         .card {
-            background: white;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            margin: 20px;
-            padding: 15px;
+            background: var(--card); border-radius: 12px; padding: 20px;
+            border: 1px solid #1f2a44; transition: 0.3s;
         }
+
+        .card-alert { border: 2px solid var(--accent); box-shadow: 0 0 15px rgba(0,255,136,0.2); }
+
+        .pair-title { font-size: 1.2rem; font-weight: bold; color: var(--accent); }
+        .price-main { font-size: 2.2rem; font-weight: bold; margin: 10px 0; font-variant-numeric: tabular-nums; }
+
+        /* FIBONACCI NÍVEIS */
+        .fib-container { margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px; }
+        .fib-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
+        .fib-label { color: var(--gray); }
+        .fib-val { font-weight: bold; }
+
+        .gp-highlight { background: rgba(0, 255, 136, 0.1); padding: 5px; border-radius: 4px; color: var(--accent); }
+
+        /* MENTOR AI FLUTUANTE */
+        #mentor-launcher {
+            position: fixed; bottom: 20px; right: 20px; width: 56px; height: 56px;
+            background: var(--accent); border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; cursor: pointer;
+            z-index: 999; box-shadow: 0 4px 15px rgba(0,0,0,0.5); font-size: 24px;
+        }
+
+        #mentor-chat {
+            position: fixed; bottom: 85px; right: 20px; width: 300px; height: 400px;
+            background: var(--card); border: 1px solid var(--accent); border-radius: 12px;
+            display: none; flex-direction: column; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .chat-header { background: var(--accent); color: #000; padding: 12px; font-weight: bold; display: flex; justify-content: space-between; border-radius: 10px 10px 0 0; }
+        .chat-body { flex: 1; padding: 15px; overflow-y: auto; font-size: 13px; }
+        .chat-input { padding: 10px; display: flex; gap: 5px; background: #0a0e27; }
+
+        .msg { margin-bottom: 10px; padding: 8px; border-radius: 6px; }
+        .ai-msg { background: rgba(0,255,136,0.1); color: var(--accent); }
+        .user-msg { background: rgba(255,255,255,0.05); text-align: right; }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Sniper Dashboard</h1>
-    </header>
-    <div class="container">
-        <div class="card">
-            <h2>Dashboard Card Title</h2>
-            <p>This is a sample content for the card in the dashboard. Make sure to include all necessary lines of code for proper rendering.</p>
+
+    <audio id="sniper-sound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" preload="auto"></audio>
+
+    <div id="cookie-banner">
+        <h3 style="color: var(--accent); margin-bottom: 10px;">🔒 Termos e Privacidade</h3>
+        <p style="font-size: 12px; color: var(--gray); margin-bottom: 15px;">
+            Este sistema utiliza cookies locais para salvar sua sessão e chaves de acesso. 
+            Ao continuar, você aceita que os sinais são meramente analíticos e não garantem lucro.
+        </p>
+        <button class="btn-primary" onclick="acceptPrivacy()">ACEITAR E CONTINUAR</button>
+    </div>
+
+    <div id="login-overlay" style="display: none;">
+        <div class="login-card">
+            <h2 style="color: var(--accent); margin-bottom: 20px;">SNIPER LOGIN</h2>
+            <input type="email" id="user-email" class="input-field" placeholder="E-mail de acesso">
+            <input type="password" id="user-pass" class="input-field" placeholder="Senha">
+            <button class="btn-primary" onclick="processAuth()">ENTRAR NO SISTEMA</button>
         </div>
     </div>
-    <footer>
-        <p>&copy; 2026 Sniper Dashboard</p>
-    </footer>
+
+    <header class="header">
+        <div>
+            <h1 style="color: var(--accent); font-size: 1.2rem;">SNIPER PRO v4.1</h1>
+            <small><span class="status-dot"></span> INSTITUCIONAL LIVE</small>
+        </div>
+        <div style="text-align: right;">
+            <div id="clock" style="font-family: monospace; font-weight: bold;">00:00:00</div>
+            <button id="install-btn" style="display:none; background: var(--gold); border:none; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-top: 5px;">INSTALAR APP</button>
+        </div>
+    </header>
+
+    <main class="grid" id="asset-grid"></main>
+
+    <div id="mentor-launcher" onclick="toggleChat()">🤖</div>
+    <div id="mentor-chat">
+        <div class="chat-header">
+            <span>MENTOR SNIPER AI</span>
+            <span onclick="toggleChat()" style="cursor:pointer">✕</span>
+        </div>
+        <div class="chat-body" id="chat-msgs">
+            <div class="msg ai-msg">Olá Sniper! Pergunte sobre Fibonacci, Yields ou Gerenciamento.</div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="ai-input" class="input-field" style="margin:0; height: 35px; font-size: 13px;" placeholder="Dúvida operacional...">
+            <button onclick="askAI()" style="background: var(--accent); border:none; padding: 0 10px; border-radius: 4px; font-weight: bold;">🚀</button>
+        </div>
+    </div>
+
+    <script>
+        // --- GERENCIAMENTO DE ACESSO ---
+        function acceptPrivacy() {
+            localStorage.setItem('sniper_privacy', 'true');
+            document.getElementById('cookie-banner').style.display = 'none';
+            checkAuth();
+        }
+
+        function checkAuth() {
+            if (!localStorage.getItem('sniper_user')) {
+                document.getElementById('login-overlay').style.display = 'flex';
+            } else {
+                document.getElementById('login-overlay').style.display = 'none';
+            }
+        }
+
+        function processAuth() {
+            const email = document.getElementById('user-email').value;
+            const pass = document.getElementById('user-pass').value;
+            if (email && pass) {
+                localStorage.setItem('sniper_user', JSON.stringify({email, pass}));
+                document.getElementById('login-overlay').style.display = 'none';
+            }
+        }
+
+        // --- MOTOR DE ANÁLISE ---
+        const ASSETS = [
+            { id: 'EURUSD', name: 'EUR / USD', price: 1.18442, high: 1.19100, low: 1.18000, trend: 'bullish' },
+            { id: 'GBPUSD', name: 'GBP / USD', price: 1.35320, high: 1.36500, low: 1.35000, trend: 'bearish' },
+            { id: 'XAUUSD', name: 'OURO (XAU)', price: 4985.50, high: 5020.00, low: 4950.00, trend: 'bullish' }
+        ];
+
+        function updateDashboard() {
+            const grid = document.getElementById('asset-grid');
+            grid.innerHTML = '';
+
+            ASSETS.forEach(a => {
+                const diff = a.high - a.low;
+                const gp = a.trend === 'bullish' ? a.high - (diff * 0.618) : a.low + (diff * 0.618);
+                const exp = a.trend === 'bullish' ? a.high + (diff * 1.618) : a.low - (diff * 1.618);
+                const isNearGP = Math.abs(a.price - gp) < (diff * 0.03);
+
+                if (isNearGP) document.getElementById('sniper-sound').play().catch(() => {});
+
+                grid.innerHTML += `
+                    <div class="card ${isNearGP ? 'card-alert' : ''}">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span class="pair-title">${a.name}</span>
+                            <span style="font-size: 10px; color: ${a.trend === 'bullish' ? 'var(--accent)' : 'var(--red)'}">${a.trend.toUpperCase()}</span>
+                        </div>
+                        <div class="price-main">${a.price.toFixed(a.id === 'XAUUSD' ? 2 : 5)}</div>
+                        
+                        <div class="fib-container">
+                            <div class="fib-row gp-highlight">
+                                <span class="fib-label">FIB 0.618 (GP):</span>
+                                <span class="fib-val">${gp.toFixed(5)}</span>
+                            </div>
+                            <div class="fib-row">
+                                <span class="fib-label">EXP 1.618:</span>
+                                <span class="fib-val" style="color: var(--gold)">${exp.toFixed(5)}</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 15px; text-align: center; font-size: 11px; font-weight: bold; color: ${isNearGP ? 'var(--accent)' : 'var(--gray)'}">
+                            ${isNearGP ? '🎯 TIRO DE SNIPER: GOLDEN POCKET' : 'AGUARDANDO CONFLUÊNCIA'}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // --- MENTOR AI ---
+        function toggleChat() {
+            const chat = document.getElementById('mentor-chat');
+            chat.style.display = chat.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function askAI() {
+            const input = document.getElementById('ai-input');
+            const msgs = document.getElementById('chat-msgs');
+            const query = input.value.toLowerCase();
+            if (!query) return;
+
+            msgs.innerHTML += `<div class="msg user-msg">${input.value}</div>`;
+            input.value = '';
+
+            setTimeout(() => {
+                let resp = "Foque na confluência do Golden Pocket (0.618).";
+                if (query.includes("api") || query.includes("code") || query.includes("backend")) {
+                    resp = "Acesso negado. Minha função é estritamente operacional.";
+                } else if (query.includes("yield")) {
+                    resp = "Yields caindo sugerem fraqueza no Dólar, favorecendo o Euro.";
+                }
+                msgs.innerHTML += `<div class="msg ai-msg"><b>Mentor:</b> ${resp}</div>`;
+                msgs.scrollTop = msgs.scrollHeight;
+            }, 600);
+        }
+
+        // --- INICIALIZAÇÃO ---
+        setInterval(() => {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+            // Simulação leve de movimento de mercado
+            ASSETS[0].price += (Math.random() - 0.5) * 0.0001;
+            updateDashboard();
+        }, 1000);
+
+        window.onload = () => {
+            if (!localStorage.getItem('sniper_privacy')) {
+                document.getElementById('cookie-banner').style.display = 'block';
+            } else {
+                document.getElementById('cookie-banner').style.display = 'none';
+                checkAuth();
+            }
+            updateDashboard();
+        };
+
+        // Suporte PWA
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('install-btn').style.display = 'inline-block';
+        });
+
+        document.getElementById('install-btn').addEventListener('click', () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt = null;
+            }
+        });
+    </script>
 </body>
 </html>
