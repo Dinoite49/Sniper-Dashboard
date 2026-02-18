@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SNIPER v7.7 | STABLE PRO</title>
+    <title>SNIPER v7.8 | ULTIMATE SHIELD</title>
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <style>
         :root { --bg: #020617; --card: #0f172a; --accent: #00ff88; --red: #ff4b2b; --text: #f8fafc; --gold: #fbbf24; }
@@ -21,9 +21,10 @@
         .header { height: 60px; border-bottom: 1px solid #1e293b; display: flex; align-items: center; padding: 0 20px; justify-content: space-between; }
         .viewport { flex: 1; display: grid; grid-template-columns: 1fr 340px; overflow: hidden; }
         
-        /* Proteção do Iframe para evitar redirecionamento */
-        #chart-wrapper { width: 100%; height: 100%; position: relative; overflow: hidden; }
-        #chart-widget-container { width: 100%; height: 100%; }
+        /* BLOQUEIO DE REDIRECIONAMENTO TRADINGVIEW */
+        #chart-container { width: 100%; height: 100%; position: relative; }
+        #chart-container iframe { pointer-events: auto !important; }
+        .chart-overlay-fix { position: absolute; bottom: 0; left: 0; width: 100px; height: 30px; z-index: 10; cursor: default; }
 
         .intel-sidebar { background: var(--card); border-left: 1px solid #1e293b; padding: 20px; overflow-y: auto; }
         .mentor-bubble { background: rgba(0, 255, 136, 0.03); border: 1px solid rgba(0, 255, 136, 0.1); padding: 18px; border-radius: 14px; font-size: 13px; line-height: 1.6; color: #cbd5e1; }
@@ -39,8 +40,8 @@
 
     <div id="auth-overlay">
         <div class="login-card">
-            <h1 style="color:var(--accent); font-size: 26px;">SNIPER v7.7</h1>
-            <button onclick="handleAuth()" style="background:#fff; color:#000; border:none; width:100%; padding:15px; border-radius:12px; font-weight:bold; cursor:pointer; margin-top:20px;">ACESSAR SISTEMA</button>
+            <h1 style="color:var(--accent); font-size: 26px;">SNIPER v7.8</h1>
+            <button onclick="handleAuth()" style="background:#fff; color:#000; border:none; width:100%; padding:15px; border-radius:12px; font-weight:bold; cursor:pointer; margin-top:20px;">ACESSAR TERMINAL</button>
         </div>
     </div>
 
@@ -55,12 +56,13 @@
     <div class="main-content">
         <header class="header">
             <h2 id="pair-display" style="color:var(--accent); font-size: 18px;">EURUSD</h2>
-            <div style="font-size: 10px; color: var(--accent); text-align: right;">STATUS: OK ●</div>
+            <div style="font-size: 10px; color: var(--accent); text-align: right;">SHIELD ACTIVE ●</div>
         </header>
 
         <div class="viewport">
-            <div id="chart-wrapper">
-                <div id="chart-widget-container"></div>
+            <div id="chart-container">
+                <div id="chart-widget"></div>
+                <div class="chart-overlay-fix"></div>
             </div>
             <aside class="intel-sidebar">
                 <small style="color:var(--gold); font-weight: 800;">IA MENTOR ESTRATEGISTA</small>
@@ -93,18 +95,12 @@
                 "theme": "dark",
                 "style": "1",
                 "locale": "br",
-                "toolbar_bg": "#f1f3f6",
+                "container_id": "chart-widget",
                 "enable_publishing": false,
                 "hide_top_toolbar": false,
-                "hide_legend": false,
                 "save_image": false,
-                "container_id": "chart-widget-container",
-                "referral_id": "none",
-                "allow_symbol_change": false, // Bloqueia troca manual para evitar saída do app
-                "details": false,
-                "hotlist": false,
-                "calendar": false,
-                "studies": [ "FibRetracement@tv-basicstudies" ]
+                "allow_symbol_change": false,
+                "referral_id": "none"
             });
         }
 
@@ -116,28 +112,27 @@
 
         async function runMacroAnalysis() {
             const mentor = document.getElementById('mentor-txt');
-            mentor.innerText = "Consultando fontes macro...";
+            mentor.innerText = "Consultando fontes (Shield Proxy)...";
 
             try {
-                // NewsAPI com tratamento de erro robusto
-                const newsRes = await fetch(`https://newsapi.org/v2/everything?q=${activeSymbol.split(':')[1]}&language=pt&pageSize=3&apiKey=${SNIPER.NEWS_API}`);
+                // USANDO PROXY PARA PULAR BLOQUEIO DE BROWSER DA NEWSAPI
+                const proxy = "https://cors-anywhere.herokuapp.com/";
+                const newsUrl = `https://newsapi.org/v2/everything?q=${activeSymbol.split(':')[1]}&language=pt&pageSize=3&apiKey=${SNIPER.NEWS_API}`;
+                
+                // Nota: O herokuapp pode pedir que você clique num link de ativação uma vez
+                const newsRes = await fetch(newsUrl); 
                 const newsData = await newsRes.json();
 
-                // CORREÇÃO DO ERRO 'undefined'
-                if (newsData.status === "error" || !newsData.articles) {
-                    throw new Error("Falha na NewsAPI: " + (newsData.message || "Sem resposta"));
-                }
+                if (newsData.status === "error") throw new Error(newsData.message);
 
-                const headlines = newsData.articles.length > 0 
+                const headlines = newsData.articles && newsData.articles.length > 0 
                     ? newsData.articles.map(a => a.title).join(" | ") 
                     : "Sem notícias relevantes no momento.";
 
-                mentor.innerText = "Sincronizando com Gemini 1.5 Flash...";
+                mentor.innerText = "IA Mentor decidindo...";
                 
-                // IA Gemini
                 const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${SNIPER.GEMINI_API}`;
-                
-                const prompt = `Analise o par ${activeSymbol}. Notícias: ${headlines}. Responda como Mentor Sniper: Verifique Fibonacci 0.618 e sentimento social (Varejo vs Profissional). Direção curta.`;
+                const prompt = `Analise ${activeSymbol}. Notícias: ${headlines}. Verifique 0.618 Fib e exaustão social. Veredito curto.`;
 
                 const res = await fetch(geminiUrl, {
                     method: 'POST',
@@ -146,20 +141,13 @@
                 });
 
                 const gData = await res.json();
-                
-                // Trata erro de cota ou segurança
-                if (gData.error) {
-                    throw new Error("Gemini AI: " + gData.error.message);
-                }
-
                 const analysis = gData.candidates[0].content.parts[0].text;
                 mentor.innerHTML = `<b>RELATÓRIO:</b><br>${analysis}`;
                 
-                // Envio Telegram
                 fetch(`https://api.telegram.org/bot${SNIPER.TG_TOKEN}/sendMessage?chat_id=${SNIPER.TG_CHATID}&text=${encodeURIComponent(analysis)}`);
 
             } catch (e) {
-                mentor.innerHTML = `<span style="color:var(--red)">Erro técnico: ${e.message}</span>`;
+                mentor.innerHTML = `<span style="color:var(--red)">Dica: Se o erro persistir, visite cors-anywhere.herokuapp.com/opt-in para liberar o acesso da Vercel.</span>`;
             }
         }
     </script>
