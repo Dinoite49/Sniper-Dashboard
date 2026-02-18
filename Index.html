@@ -2,24 +2,27 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SNIPER v7.6 | STABLE EDITION</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SNIPER v7.7 | STABLE PRO</title>
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <style>
         :root { --bg: #020617; --card: #0f172a; --accent: #00ff88; --red: #ff4b2b; --text: #f8fafc; --gold: #fbbf24; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
         
         #auth-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 10000; }
-        .login-card { background: var(--card); padding: 40px; border-radius: 24px; border: 1px solid var(--accent); text-align: center; width: 95%; max-width: 400px; }
+        .login-card { background: var(--card); padding: 40px; border-radius: 24px; border: 1px solid var(--accent); text-align: center; width: 90%; max-width: 400px; }
         
         .sidebar { width: 75px; background: #010409; border-right: 1px solid #1e293b; display: flex; flex-direction: column; align-items: center; padding: 25px 0; gap: 15px; }
         .asset-btn { width: 55px; height: 50px; border-radius: 12px; border: 1px solid #334155; background: var(--card); color: #94a3b8; font-size: 10px; font-weight: bold; cursor: pointer; }
         .asset-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0, 255, 136, 0.05); }
 
         .main-content { flex: 1; display: flex; flex-direction: column; }
-        .header { height: 65px; border-bottom: 1px solid #1e293b; display: flex; align-items: center; padding: 0 20px; justify-content: space-between; }
-        .viewport { flex: 1; display: grid; grid-template-columns: 1fr 350px; }
+        .header { height: 60px; border-bottom: 1px solid #1e293b; display: flex; align-items: center; padding: 0 20px; justify-content: space-between; }
+        .viewport { flex: 1; display: grid; grid-template-columns: 1fr 340px; overflow: hidden; }
+        
+        /* Proteção do Iframe para evitar redirecionamento */
+        #chart-wrapper { width: 100%; height: 100%; position: relative; overflow: hidden; }
         #chart-widget-container { width: 100%; height: 100%; }
 
         .intel-sidebar { background: var(--card); border-left: 1px solid #1e293b; padding: 20px; overflow-y: auto; }
@@ -27,7 +30,7 @@
         .btn-ai { background: linear-gradient(135deg, #00ff88, #0088cc); color: #020617; border: none; width: 100%; padding: 16px; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 20px; text-transform: uppercase; }
 
         @media (max-width: 768px) {
-            .viewport { grid-template-columns: 1fr; grid-template-rows: 1fr 350px; }
+            .viewport { grid-template-columns: 1fr; grid-template-rows: 1fr 300px; }
             .intel-sidebar { border-left: none; border-top: 1px solid #1e293b; }
         }
     </style>
@@ -36,8 +39,8 @@
 
     <div id="auth-overlay">
         <div class="login-card">
-            <h1 style="color:var(--accent); font-size: 28px;">SNIPER v7.6</h1>
-            <button onclick="handleAuth()" style="background:#fff; color:#000; border:none; width:100%; padding:15px; border-radius:12px; font-weight:bold; cursor:pointer; margin-top:20px;">ACESSAR TERMINAL</button>
+            <h1 style="color:var(--accent); font-size: 26px;">SNIPER v7.7</h1>
+            <button onclick="handleAuth()" style="background:#fff; color:#000; border:none; width:100%; padding:15px; border-radius:12px; font-weight:bold; cursor:pointer; margin-top:20px;">ACESSAR SISTEMA</button>
         </div>
     </div>
 
@@ -51,12 +54,14 @@
 
     <div class="main-content">
         <header class="header">
-            <h2 id="pair-display" style="color:var(--accent); font-size: 20px;">EURUSD</h2>
-            <div style="font-size: 10px; color: var(--accent); text-align: right;">NEWS-API: OK ●<br>GEMINI 1.5: READY ●</div>
+            <h2 id="pair-display" style="color:var(--accent); font-size: 18px;">EURUSD</h2>
+            <div style="font-size: 10px; color: var(--accent); text-align: right;">STATUS: OK ●</div>
         </header>
 
         <div class="viewport">
-            <div id="chart-widget-container"></div>
+            <div id="chart-wrapper">
+                <div id="chart-widget-container"></div>
+            </div>
             <aside class="intel-sidebar">
                 <small style="color:var(--gold); font-weight: 800;">IA MENTOR ESTRATEGISTA</small>
                 <div id="mentor-txt" class="mentor-bubble" style="margin-top:10px;">Aguardando sinal...</div>
@@ -88,9 +93,18 @@
                 "theme": "dark",
                 "style": "1",
                 "locale": "br",
+                "toolbar_bg": "#f1f3f6",
+                "enable_publishing": false,
+                "hide_top_toolbar": false,
+                "hide_legend": false,
+                "save_image": false,
                 "container_id": "chart-widget-container",
-                "allow_symbol_change": false, // Trava o gráfico no app
-                "hide_side_toolbar": false
+                "referral_id": "none",
+                "allow_symbol_change": false, // Bloqueia troca manual para evitar saída do app
+                "details": false,
+                "hotlist": false,
+                "calendar": false,
+                "studies": [ "FibRetracement@tv-basicstudies" ]
             });
         }
 
@@ -102,23 +116,28 @@
 
         async function runMacroAnalysis() {
             const mentor = document.getElementById('mentor-txt');
-            mentor.innerText = "Consultando NewsAPI...";
+            mentor.innerText = "Consultando fontes macro...";
 
             try {
-                // Tratamento de erro robusto para a NewsAPI
+                // NewsAPI com tratamento de erro robusto
                 const newsRes = await fetch(`https://newsapi.org/v2/everything?q=${activeSymbol.split(':')[1]}&language=pt&pageSize=3&apiKey=${SNIPER.NEWS_API}`);
                 const newsData = await newsRes.json();
 
-                // Verifica se os artigos existem antes de usar .map()
-                let headlines = "Sem notícias recentes para este ativo.";
-                if (newsData && newsData.articles && newsData.articles.length > 0) {
-                    headlines = newsData.articles.map(a => a.title).join(" | ");
+                // CORREÇÃO DO ERRO 'undefined'
+                if (newsData.status === "error" || !newsData.articles) {
+                    throw new Error("Falha na NewsAPI: " + (newsData.message || "Sem resposta"));
                 }
 
-                mentor.innerText = "Gemini processando cenário...";
+                const headlines = newsData.articles.length > 0 
+                    ? newsData.articles.map(a => a.title).join(" | ") 
+                    : "Sem notícias relevantes no momento.";
+
+                mentor.innerText = "Sincronizando com Gemini 1.5 Flash...";
+                
+                // IA Gemini
                 const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${SNIPER.GEMINI_API}`;
                 
-                const prompt = `Trader Fábio solicita análise do par ${activeSymbol}. Notícias atuais: ${headlines}. Analise o sentimento (Varejo vs Profissional) e dê um veredito curto (Compra, Venda ou Inversa) baseado no Golden Pocket.`;
+                const prompt = `Analise o par ${activeSymbol}. Notícias: ${headlines}. Responda como Mentor Sniper: Verifique Fibonacci 0.618 e sentimento social (Varejo vs Profissional). Direção curta.`;
 
                 const res = await fetch(geminiUrl, {
                     method: 'POST',
@@ -127,13 +146,20 @@
                 });
 
                 const gData = await res.json();
-                const veredito = gData.candidates[0].content.parts[0].text;
                 
-                mentor.innerHTML = `<b>ANÁLISE SNIPER:</b><br>${veredito}`;
-                fetch(`https://api.telegram.org/bot${SNIPER.TG_TOKEN}/sendMessage?chat_id=${SNIPER.TG_CHATID}&text=${encodeURIComponent(veredito)}`);
+                // Trata erro de cota ou segurança
+                if (gData.error) {
+                    throw new Error("Gemini AI: " + gData.error.message);
+                }
+
+                const analysis = gData.candidates[0].content.parts[0].text;
+                mentor.innerHTML = `<b>RELATÓRIO:</b><br>${analysis}`;
+                
+                // Envio Telegram
+                fetch(`https://api.telegram.org/bot${SNIPER.TG_TOKEN}/sendMessage?chat_id=${SNIPER.TG_CHATID}&text=${encodeURIComponent(analysis)}`);
 
             } catch (e) {
-                mentor.innerHTML = `<span style="color:var(--red)">Erro técnico: Verifique sua chave NewsAPI ou conexão.</span>`;
+                mentor.innerHTML = `<span style="color:var(--red)">Erro técnico: ${e.message}</span>`;
             }
         }
     </script>
