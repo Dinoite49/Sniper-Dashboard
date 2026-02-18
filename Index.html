@@ -3,153 +3,617 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SNIPER v7.8 | ULTIMATE SHIELD</title>
+    <title>SNIPER v8.0 | SECURE SHIELD</title>
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <style>
-        :root { --bg: #020617; --card: #0f172a; --accent: #00ff88; --red: #ff4b2b; --text: #f8fafc; --gold: #fbbf24; }
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+        :root { 
+            --bg: #020617; 
+            --card: #0f172a; 
+            --accent: #00ff88; 
+            --red: #ff4b2b; 
+            --text: #f8fafc; 
+            --gold: #fbbf24; 
+        }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            display: flex; 
+            height: 100vh; 
+            overflow: hidden; 
+        }
         
-        #auth-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 10000; }
-        .login-card { background: var(--card); padding: 40px; border-radius: 24px; border: 1px solid var(--accent); text-align: center; width: 90%; max-width: 400px; }
+        /* AUTH OVERLAY */
+        #auth-overlay { 
+            position: fixed; 
+            inset: 0; 
+            background: var(--bg); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 10000; 
+        }
+        .login-card { 
+            background: var(--card); 
+            padding: 40px; 
+            border-radius: 24px; 
+            border: 2px solid var(--accent); 
+            text-align: center; 
+            width: 90%; 
+            max-width: 400px; 
+            box-shadow: 0 20px 60px rgba(0,255,136,0.3);
+        }
         
-        .sidebar { width: 75px; background: #010409; border-right: 1px solid #1e293b; display: flex; flex-direction: column; align-items: center; padding: 25px 0; gap: 15px; }
-        .asset-btn { width: 55px; height: 50px; border-radius: 12px; border: 1px solid #334155; background: var(--card); color: #94a3b8; font-size: 10px; font-weight: bold; cursor: pointer; }
-        .asset-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0, 255, 136, 0.05); }
+        /* SIDEBAR */
+        .sidebar { 
+            width: 75px; 
+            background: #010409; 
+            border-right: 1px solid #1e293b; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 25px 0; 
+            gap: 15px; 
+        }
+        .asset-btn { 
+            width: 55px; 
+            height: 50px; 
+            border-radius: 12px; 
+            border: 1px solid #334155; 
+            background: var(--card); 
+            color: #94a3b8; 
+            font-size: 10px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: all 0.3s ease;
+        }
+        .asset-btn:hover {
+            border-color: var(--accent);
+            transform: scale(1.05);
+        }
+        .asset-btn.active { 
+            border-color: var(--accent); 
+            color: var(--accent); 
+            background: rgba(0, 255, 136, 0.1); 
+        }
 
-        .main-content { flex: 1; display: flex; flex-direction: column; }
-        .header { height: 60px; border-bottom: 1px solid #1e293b; display: flex; align-items: center; padding: 0 20px; justify-content: space-between; }
-        .viewport { flex: 1; display: grid; grid-template-columns: 1fr 340px; overflow: hidden; }
+        /* MAIN CONTENT */
+        .main-content { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .header { 
+            height: 60px; 
+            border-bottom: 1px solid #1e293b; 
+            display: flex; 
+            align-items: center; 
+            padding: 0 20px; 
+            justify-content: space-between; 
+        }
+        .viewport { 
+            flex: 1; 
+            display: grid; 
+            grid-template-columns: 1fr 340px; 
+            overflow: hidden; 
+        }
         
-        /* BLOQUEIO DE REDIRECIONAMENTO TRADINGVIEW */
-        #chart-container { width: 100%; height: 100%; position: relative; }
-        #chart-container iframe { pointer-events: auto !important; }
-        .chart-overlay-fix { position: absolute; bottom: 0; left: 0; width: 100px; height: 30px; z-index: 10; cursor: default; }
+        /* TRADINGVIEW CHART - BLOQUEIO TOTAL DE REDIRECIONAMENTO */
+        #chart-container { 
+            width: 100%; 
+            height: 100%; 
+            position: relative; 
+            background: var(--bg);
+        }
+        #chart-widget { 
+            width: 100%; 
+            height: 100%; 
+        }
+        
+        /* CAMADA DE PROTEÇÃO CONTRA CLIQUE NO LOGO DO TRADINGVIEW */
+        .chart-shield { 
+            position: absolute; 
+            bottom: 0; 
+            left: 0; 
+            width: 150px; 
+            height: 40px; 
+            z-index: 999; 
+            cursor: default; 
+            pointer-events: auto;
+        }
+        
+        /* SIDEBAR INTEL */
+        .intel-sidebar { 
+            background: var(--card); 
+            border-left: 1px solid #1e293b; 
+            padding: 20px; 
+            overflow-y: auto; 
+            display: flex;
+            flex-direction: column;
+        }
+        .mentor-bubble { 
+            background: rgba(0, 255, 136, 0.03); 
+            border: 1px solid rgba(0, 255, 136, 0.1); 
+            padding: 18px; 
+            border-radius: 14px; 
+            font-size: 13px; 
+            line-height: 1.6; 
+            color: #cbd5e1; 
+            margin-top: 10px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        .btn-ai { 
+            background: linear-gradient(135deg, #00ff88, #0088cc); 
+            color: #020617; 
+            border: none; 
+            width: 100%; 
+            padding: 16px; 
+            border-radius: 12px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            margin-top: 20px; 
+            text-transform: uppercase; 
+            transition: all 0.3s ease;
+        }
+        .btn-ai:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(0,255,136,0.4);
+        }
+        .btn-ai:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
-        .intel-sidebar { background: var(--card); border-left: 1px solid #1e293b; padding: 20px; overflow-y: auto; }
-        .mentor-bubble { background: rgba(0, 255, 136, 0.03); border: 1px solid rgba(0, 255, 136, 0.1); padding: 18px; border-radius: 14px; font-size: 13px; line-height: 1.6; color: #cbd5e1; }
-        .btn-ai { background: linear-gradient(135deg, #00ff88, #0088cc); color: #020617; border: none; width: 100%; padding: 16px; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 20px; text-transform: uppercase; }
+        /* LOADING ANIMATION */
+        .loading {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
 
+        /* RESPONSIVE */
         @media (max-width: 768px) {
-            .viewport { grid-template-columns: 1fr; grid-template-rows: 1fr 300px; }
-            .intel-sidebar { border-left: none; border-top: 1px solid #1e293b; }
+            .viewport { 
+                grid-template-columns: 1fr; 
+                grid-template-rows: 1fr 300px; 
+            }
+            .intel-sidebar { 
+                border-left: none; 
+                border-top: 1px solid #1e293b; 
+            }
+            .sidebar {
+                width: 60px;
+                padding: 15px 0;
+            }
+            .asset-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 9px;
+            }
         }
     </style>
 </head>
 <body>
 
+    <!-- AUTH OVERLAY -->
     <div id="auth-overlay">
         <div class="login-card">
-            <h1 style="color:var(--accent); font-size: 26px;">SNIPER v7.8</h1>
-            <button onclick="handleAuth()" style="background:#fff; color:#000; border:none; width:100%; padding:15px; border-radius:12px; font-weight:bold; cursor:pointer; margin-top:20px;">ACESSAR TERMINAL</button>
+            <h1 style="color:var(--accent); font-size: 28px; margin-bottom: 10px;">🎯 SNIPER v8.0</h1>
+            <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">Secure Shield Activated</p>
+            <button onclick="handleAuth()" style="background:#fff; color:#000; border:none; width:100%; padding:16px; border-radius:12px; font-weight:bold; cursor:pointer; font-size: 15px;">
+                ACESSAR TERMINAL
+            </button>
         </div>
     </div>
 
+    <!-- SIDEBAR -->
     <nav class="sidebar">
-        <button class="asset-btn active" onclick="updateChart('FX:EURUSD')">EUR</button>
-        <button class="asset-btn" onclick="updateChart('FX:GBPUSD')">GBP</button>
-        <button class="asset-btn" onclick="updateChart('OANDA:XAUUSD')">GOLD</button>
-        <button class="asset-btn" onclick="updateChart('BINANCE:BTCUSDT')">BTC</button>
-        <button class="asset-btn" onclick="updateChart('CAPITALCOM:DXY')">DXY</button>
+        <button class="asset-btn active" onclick="updateChart('FX:EURUSD', 'EURUSD')" data-symbol="EURUSD">
+            EUR<br>USD
+        </button>
+        <button class="asset-btn" onclick="updateChart('FX:GBPUSD', 'GBPUSD')" data-symbol="GBPUSD">
+            GBP<br>USD
+        </button>
+        <button class="asset-btn" onclick="updateChart('OANDA:XAUUSD', 'GOLD')" data-symbol="GOLD">
+            GOLD
+        </button>
+        <button class="asset-btn" onclick="updateChart('BINANCE:BTCUSDT', 'BTC')" data-symbol="BTC">
+            BTC
+        </button>
+        <button class="asset-btn" onclick="updateChart('CAPITALCOM:DXY', 'DXY')" data-symbol="DXY">
+            DXY
+        </button>
     </nav>
 
+    <!-- MAIN CONTENT -->
     <div class="main-content">
         <header class="header">
-            <h2 id="pair-display" style="color:var(--accent); font-size: 18px;">EURUSD</h2>
-            <div style="font-size: 10px; color: var(--accent); text-align: right;">SHIELD ACTIVE ●</div>
+            <div>
+                <h2 id="pair-display" style="color:var(--accent); font-size: 20px; font-weight: 700;">EURUSD</h2>
+                <small id="pair-subtitle" style="color: #64748b; font-size: 11px;">Forex Majors</small>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 11px; color: var(--accent); font-weight: 600;">
+                    🛡️ SHIELD ACTIVE
+                </div>
+                <div id="status-indicator" style="font-size: 10px; color: #64748b;">
+                    Ready
+                </div>
+            </div>
         </header>
 
         <div class="viewport">
+            <!-- CHART AREA -->
             <div id="chart-container">
                 <div id="chart-widget"></div>
-                <div class="chart-overlay-fix"></div>
+                <!-- CAMADA DE PROTEÇÃO CONTRA REDIRECIONAMENTO -->
+                <div class="chart-shield"></div>
             </div>
+
+            <!-- INTEL SIDEBAR -->
             <aside class="intel-sidebar">
-                <small style="color:var(--gold); font-weight: 800;">IA MENTOR ESTRATEGISTA</small>
-                <div id="mentor-txt" class="mentor-bubble" style="margin-top:10px;">Aguardando sinal...</div>
-                <button class="btn-ai" onclick="runMacroAnalysis()">Análise Macro & Sniper</button>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <small style="color:var(--gold); font-weight: 800; letter-spacing: 0.5px;">
+                        🤖 IA MENTOR ESTRATEGISTA
+                    </small>
+                    <div id="api-status" style="font-size: 10px; color: var(--accent);">
+                        ● Online
+                    </div>
+                </div>
+                
+                <div id="mentor-txt" class="mentor-bubble">
+                    <p style="color: #94a3b8; font-style: italic;">
+                        Aguardando análise... Clique no botão abaixo para iniciar a avaliação institucional do ativo.
+                    </p>
+                </div>
+                
+                <button id="analyze-btn" class="btn-ai" onclick="runMacroAnalysis()">
+                    🎯 ANÁLISE MACRO & SNIPER
+                </button>
+                
+                <div style="margin-top: 15px; padding: 12px; background: rgba(251, 191, 36, 0.05); border: 1px solid rgba(251, 191, 36, 0.2); border-radius: 10px;">
+                    <small style="color: #fbbf24; font-size: 11px; line-height: 1.5;">
+                        💡 <b>Dica:</b> A IA analisa notícias, níveis de Fibonacci, sentiment social e contexto macro em tempo real.
+                    </small>
+                </div>
             </aside>
         </div>
     </div>
 
     <script>
-        const SNIPER = {
-            GEMINI_API: 'AIzaSyD1IjhkGoQzoVtcmDws-sIbxT7QTlo-eJs',
-            NEWS_API: '821b7bb1311c454f9b0c92369865838c',
+        // ==================== CONFIGURAÇÃO SEGURA ====================
+        // IMPORTANTE: Em produção, NUNCA exponha chaves de API no frontend
+        // Use um backend (Netlify Functions, Vercel Serverless, etc.)
+        
+        const SNIPER_CONFIG = {
+            // Telegram para notificações (pode ficar no frontend)
             TG_TOKEN: '8227143905:AAEgnLHP9obvDmNrCAySxpDQER2ukpuTi9Q',
-            TG_CHATID: '6072254244'
+            TG_CHATID: '6072254244',
+            
+            // APIs que precisam de backend (exemplos de endpoints seguros)
+            BACKEND_URL: 'https://seu-backend.vercel.app/api', // VOCÊ PRECISA CRIAR ISSO
+            
+            // Configurações do app
+            DEFAULT_SYMBOL: 'FX:EURUSD',
+            CHART_INTERVAL: '15'
         };
 
-        let activeSymbol = "FX:EURUSD";
+        let activeSymbol = SNIPER_CONFIG.DEFAULT_SYMBOL;
+        let activeSymbolName = 'EURUSD';
+        let chartWidget = null;
 
+        // ==================== AUTH ====================
         function handleAuth() {
             document.getElementById('auth-overlay').style.display = 'none';
             initChart();
+            updateStatus('Terminal online');
         }
 
+        // ==================== TRADINGVIEW CHART ====================
         function initChart() {
-            new TradingView.widget({
-                "autosize": true,
-                "symbol": activeSymbol,
-                "interval": "15",
-                "theme": "dark",
-                "style": "1",
-                "locale": "br",
-                "container_id": "chart-widget",
-                "enable_publishing": false,
-                "hide_top_toolbar": false,
-                "save_image": false,
-                "allow_symbol_change": false,
-                "referral_id": "none"
-            });
-        }
-
-        function updateChart(symbol) {
-            activeSymbol = symbol;
-            document.getElementById('pair-display').innerText = symbol.split(':')[1];
-            initChart();
-        }
-
-        async function runMacroAnalysis() {
-            const mentor = document.getElementById('mentor-txt');
-            mentor.innerText = "Consultando fontes (Shield Proxy)...";
-
+            // Limpar container
+            const container = document.getElementById('chart-widget');
+            container.innerHTML = '';
+            
             try {
-                // USANDO PROXY PARA PULAR BLOQUEIO DE BROWSER DA NEWSAPI
-                const proxy = "https://cors-anywhere.herokuapp.com/";
-                const newsUrl = `https://newsapi.org/v2/everything?q=${activeSymbol.split(':')[1]}&language=pt&pageSize=3&apiKey=${SNIPER.NEWS_API}`;
-                
-                // Nota: O herokuapp pode pedir que você clique num link de ativação uma vez
-                const newsRes = await fetch(newsUrl); 
-                const newsData = await newsRes.json();
-
-                if (newsData.status === "error") throw new Error(newsData.message);
-
-                const headlines = newsData.articles && newsData.articles.length > 0 
-                    ? newsData.articles.map(a => a.title).join(" | ") 
-                    : "Sem notícias relevantes no momento.";
-
-                mentor.innerText = "IA Mentor decidindo...";
-                
-                const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${SNIPER.GEMINI_API}`;
-                const prompt = `Analise ${activeSymbol}. Notícias: ${headlines}. Verifique 0.618 Fib e exaustão social. Veredito curto.`;
-
-                const res = await fetch(geminiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                chartWidget = new TradingView.widget({
+                    autosize: true,
+                    symbol: activeSymbol,
+                    interval: SNIPER_CONFIG.CHART_INTERVAL,
+                    timezone: "Europe/London",
+                    theme: "dark",
+                    style: "1",
+                    locale: "br",
+                    toolbar_bg: "#0f172a",
+                    enable_publishing: false,
+                    hide_top_toolbar: false,
+                    hide_legend: false,
+                    save_image: false,
+                    allow_symbol_change: false,
+                    container_id: "chart-widget",
+                    studies: [
+                        "MASimple@tv-basicstudies",
+                        "VWAP@tv-basicstudies"
+                    ],
+                    disabled_features: [
+                        "use_localstorage_for_settings",
+                        "header_symbol_search",
+                        "header_compare",
+                        "header_undo_redo"
+                    ],
+                    enabled_features: [
+                        "study_templates"
+                    ]
                 });
-
-                const gData = await res.json();
-                const analysis = gData.candidates[0].content.parts[0].text;
-                mentor.innerHTML = `<b>RELATÓRIO:</b><br>${analysis}`;
                 
-                fetch(`https://api.telegram.org/bot${SNIPER.TG_TOKEN}/sendMessage?chat_id=${SNIPER.TG_CHATID}&text=${encodeURIComponent(analysis)}`);
-
-            } catch (e) {
-                mentor.innerHTML = `<span style="color:var(--red)">Dica: Se o erro persistir, visite cors-anywhere.herokuapp.com/opt-in para liberar o acesso da Vercel.</span>`;
+                console.log('📊 Chart loaded:', activeSymbol);
+            } catch (error) {
+                console.error('Chart error:', error);
+                updateStatus('Chart error', true);
             }
         }
+
+        // ==================== UPDATE CHART ====================
+        function updateChart(symbol, displayName) {
+            activeSymbol = symbol;
+            activeSymbolName = displayName;
+            
+            // Update UI
+            document.getElementById('pair-display').innerText = displayName;
+            
+            // Update subtitle
+            const subtitles = {
+                'EURUSD': 'Forex Majors',
+                'GBPUSD': 'Forex Majors',
+                'GOLD': 'Commodities',
+                'BTC': 'Cryptocurrency',
+                'DXY': 'Dollar Index'
+            };
+            document.getElementById('pair-subtitle').innerText = subtitles[displayName] || 'Markets';
+            
+            // Update active button
+            document.querySelectorAll('.asset-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-symbol') === displayName) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Reinitialize chart
+            initChart();
+            
+            // Clear mentor text
+            document.getElementById('mentor-txt').innerHTML = 
+                `<p style="color: #94a3b8; font-style: italic;">Ativo alterado para <b>${displayName}</b>. Clique em "Análise Macro" para obter insights.</p>`;
+        }
+
+        // ==================== STATUS INDICATOR ====================
+        function updateStatus(message, isError = false) {
+            const indicator = document.getElementById('status-indicator');
+            indicator.textContent = message;
+            indicator.style.color = isError ? 'var(--red)' : '#64748b';
+        }
+
+        // ==================== MACRO ANALYSIS ====================
+        async function runMacroAnalysis() {
+            const mentor = document.getElementById('mentor-txt');
+            const analyzeBtn = document.getElementById('analyze-btn');
+            const apiStatus = document.getElementById('api-status');
+            
+            // Disable button
+            analyzeBtn.disabled = true;
+            analyzeBtn.innerHTML = '<span class="loading"></span> ANALISANDO...';
+            
+            updateStatus('Fetching data...');
+            
+            try {
+                // PASSO 1: BUSCAR NOTÍCIAS (usando API pública alternativa)
+                mentor.innerHTML = '<div class="loading"></div> Consultando fontes de notícias...';
+                
+                let headlines = '';
+                
+                try {
+                    // ALTERNATIVA 1: GNews API (gratuito, 100 req/dia)
+                    // Registre-se em: https://gnews.io/
+                    const gnewsApiKey = 'SUA_CHAVE_GNEWS_AQUI'; // SUBSTITUA
+                    
+                    const newsQuery = activeSymbolName.toLowerCase();
+                    const gnewsUrl = `https://gnews.io/api/v4/search?q=${newsQuery}&lang=pt&max=3&apikey=${gnewsApiKey}`;
+                    
+                    const newsRes = await fetch(gnewsUrl);
+                    const newsData = await newsRes.json();
+                    
+                    if (newsData.articles && newsData.articles.length > 0) {
+                        headlines = newsData.articles
+                            .map(a => a.title)
+                            .join(' | ');
+                    } else {
+                        headlines = 'Sem notícias recentes disponíveis.';
+                    }
+                } catch (newsError) {
+                    console.error('News fetch error:', newsError);
+                    headlines = 'Notícias indisponíveis no momento.';
+                }
+                
+                // PASSO 2: ANÁLISE COM IA (BACKEND SEGURO OBRIGATÓRIO)
+                mentor.innerHTML = '<div class="loading"></div> IA Mentor processando dados...';
+                apiStatus.textContent = '● Analyzing';
+                apiStatus.style.color = '#fbbf24';
+                
+                // IMPORTANTE: Você PRECISA criar um backend para isso!
+                // Exemplo usando Vercel Serverless Functions ou Netlify Functions
+                
+                try {
+                    // Endpoint do seu backend que chama o Gemini de forma segura
+                    const backendUrl = `${SNIPER_CONFIG.BACKEND_URL}/analyze`;
+                    
+                    const response = await fetch(backendUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            symbol: activeSymbolName,
+                            headlines: headlines,
+                            timestamp: new Date().toISOString()
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Backend analysis failed');
+                    }
+                    
+                    const data = await response.json();
+                    const analysis = data.analysis;
+                    
+                    // Display analysis
+                    mentor.innerHTML = `
+                        <div style="margin-bottom: 12px;">
+                            <span style="color: var(--accent); font-weight: 700; font-size: 14px;">
+                                📊 RELATÓRIO INSTITUCIONAL
+                            </span>
+                        </div>
+                        <div style="color: #cbd5e1; line-height: 1.7;">
+                            ${analysis.replace(/\n/g, '<br>')}
+                        </div>
+                        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1); color: #64748b; font-size: 11px;">
+                            Análise gerada em ${new Date().toLocaleTimeString('pt-BR')}
+                        </div>
+                    `;
+                    
+                    // Send to Telegram
+                    const telegramMessage = `🎯 SNIPER ALERT\n\n${activeSymbolName}\n\n${analysis}`;
+                    sendTelegramNotification(telegramMessage);
+                    
+                    apiStatus.textContent = '● Complete';
+                    apiStatus.style.color = 'var(--accent)';
+                    updateStatus('Analysis complete');
+                    
+                } catch (aiError) {
+                    console.error('AI Analysis error:', aiError);
+                    
+                    // FALLBACK: Análise técnica básica sem IA
+                    mentor.innerHTML = `
+                        <div style="color: var(--gold); font-weight: 700; margin-bottom: 10px;">
+                            ⚠️ ANÁLISE TÉCNICA BÁSICA
+                        </div>
+                        <div style="color: #cbd5e1; line-height: 1.7;">
+                            <b>Ativo:</b> ${activeSymbolName}<br><br>
+                            <b>Notícias:</b> ${headlines}<br><br>
+                            <b>Status:</b> Sistema de IA temporariamente indisponível. Configure um backend seguro para análises completas.<br><br>
+                            <b>Recomendação:</b> Verifique níveis de suporte/resistência no gráfico e aguarde confirmação de volume antes de operar.
+                        </div>
+                        <div style="margin-top: 15px; padding: 12px; background: rgba(255, 75, 43, 0.1); border: 1px solid rgba(255, 75, 43, 0.3); border-radius: 8px;">
+                            <small style="color: var(--red); font-size: 11px;">
+                                <b>⚠️ ATENÇÃO:</b> Para análises completas com IA, você precisa configurar um backend seguro. 
+                                <a href="#" onclick="showBackendInstructions()" style="color: var(--accent); text-decoration: underline;">
+                                    Clique aqui para instruções
+                                </a>
+                            </small>
+                        </div>
+                    `;
+                    
+                    apiStatus.textContent = '● Limited';
+                    apiStatus.style.color = '#fbbf24';
+                    updateStatus('Using fallback mode');
+                }
+                
+            } catch (error) {
+                console.error('Fatal error:', error);
+                
+                mentor.innerHTML = `
+                    <div style="color: var(--red); font-weight: 700; margin-bottom: 10px;">
+                        ❌ ERRO NA ANÁLISE
+                    </div>
+                    <div style="color: #94a3b8; font-size: 12px; line-height: 1.6;">
+                        ${error.message || 'Erro desconhecido ao processar análise.'}<br><br>
+                        Verifique sua conexão e tente novamente.
+                    </div>
+                `;
+                
+                apiStatus.textContent = '● Error';
+                apiStatus.style.color = 'var(--red)';
+                updateStatus('Analysis failed', true);
+            }
+            
+            // Re-enable button
+            analyzeBtn.disabled = false;
+            analyzeBtn.innerHTML = '🎯 ANÁLISE MACRO & SNIPER';
+        }
+
+        // ==================== TELEGRAM NOTIFICATION ====================
+        async function sendTelegramNotification(message) {
+            try {
+                const url = `https://api.telegram.org/bot${SNIPER_CONFIG.TG_TOKEN}/sendMessage`;
+                await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: SNIPER_CONFIG.TG_CHATID,
+                        text: message,
+                        parse_mode: 'HTML'
+                    })
+                });
+                console.log('📱 Telegram notification sent');
+            } catch (error) {
+                console.error('Telegram error:', error);
+            }
+        }
+
+        // ==================== BACKEND INSTRUCTIONS ====================
+        function showBackendInstructions() {
+            const mentor = document.getElementById('mentor-txt');
+            mentor.innerHTML = `
+                <div style="color: var(--accent); font-weight: 700; font-size: 14px; margin-bottom: 15px;">
+                    🛠️ COMO CONFIGURAR BACKEND SEGURO
+                </div>
+                
+                <div style="color: #cbd5e1; font-size: 12px; line-height: 1.8;">
+                    <b>OPÇÃO 1: Vercel Serverless Function</b><br>
+                    1. Crie arquivo <code>/api/analyze.js</code><br>
+                    2. Adicione chave Gemini como variável de ambiente<br>
+                    3. Faça chamada segura server-side<br><br>
+                    
+                    <b>OPÇÃO 2: Netlify Function</b><br>
+                    1. Pasta <code>netlify/functions</code><br>
+                    2. Arquivo <code>analyze.js</code><br>
+                    3. Variável env <code>GEMINI_API_KEY</code><br><br>
+                    
+                    <b>OPÇÃO 3: Backend Node.js próprio</b><br>
+                    1. Express.js + CORS<br>
+                    2. Endpoint POST /analyze<br>
+                    3. Deploy no Heroku/Railway/Render<br><br>
+                    
+                    <div style="background: rgba(0,255,136,0.1); padding: 10px; border-radius: 6px; margin-top: 10px;">
+                        <b style="color: var(--accent);">💡 Exemplo Vercel Function:</b><br>
+                        <code style="color: #94a3b8; font-size: 10px;">
+                        export default async (req, res) => {<br>
+                        &nbsp;&nbsp;const key = process.env.GEMINI_KEY;<br>
+                        &nbsp;&nbsp;// Sua lógica aqui<br>
+                        }
+                        </code>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ==================== INITIALIZE ====================
+        console.log('🎯 SNIPER v8.0 - Secure Shield Active');
+        console.log('⚠️  IMPORTANTE: Configure um backend para análises completas com IA');
     </script>
 </body>
 </html>
