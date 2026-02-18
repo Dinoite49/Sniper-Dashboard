@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SNIPER v7.5 | MACRO INTELLIGENCE</title>
+    <title>SNIPER v7.6 | STABLE EDITION</title>
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <style>
         :root { --bg: #020617; --card: #0f172a; --accent: #00ff88; --red: #ff4b2b; --text: #f8fafc; --gold: #fbbf24; }
@@ -26,16 +26,18 @@
         .mentor-bubble { background: rgba(0, 255, 136, 0.03); border: 1px solid rgba(0, 255, 136, 0.1); padding: 18px; border-radius: 14px; font-size: 13px; line-height: 1.6; color: #cbd5e1; }
         .btn-ai { background: linear-gradient(135deg, #00ff88, #0088cc); color: #020617; border: none; width: 100%; padding: 16px; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 20px; text-transform: uppercase; }
 
-        .news-tag { font-size: 10px; color: var(--gold); background: rgba(251, 191, 36, 0.1); padding: 2px 6px; border-radius: 4px; margin-bottom: 5px; display: inline-block; }
+        @media (max-width: 768px) {
+            .viewport { grid-template-columns: 1fr; grid-template-rows: 1fr 350px; }
+            .intel-sidebar { border-left: none; border-top: 1px solid #1e293b; }
+        }
     </style>
 </head>
 <body>
 
     <div id="auth-overlay">
         <div class="login-card">
-            <h1 style="color:var(--accent); font-size: 28px;">SNIPER v7.5 PRO</h1>
-            <p style="font-size: 12px; color: #64748b; margin-bottom: 20px;">Macro & Sentiment Intelligence</p>
-            <button onclick="handleAuth()" style="background:#fff; color:#000; border:none; width:100%; padding:15px; border-radius:12px; font-weight:bold; cursor:pointer;">ACESSAR SISTEMA</button>
+            <h1 style="color:var(--accent); font-size: 28px;">SNIPER v7.6</h1>
+            <button onclick="handleAuth()" style="background:#fff; color:#000; border:none; width:100%; padding:15px; border-radius:12px; font-weight:bold; cursor:pointer; margin-top:20px;">ACESSAR TERMINAL</button>
         </div>
     </div>
 
@@ -50,14 +52,14 @@
     <div class="main-content">
         <header class="header">
             <h2 id="pair-display" style="color:var(--accent); font-size: 20px;">EURUSD</h2>
-            <div style="font-size: 10px; color: var(--accent); text-align: right;">NEWS-API: ACTIVE ●<br>GEMINI 1.5: READY ●</div>
+            <div style="font-size: 10px; color: var(--accent); text-align: right;">NEWS-API: OK ●<br>GEMINI 1.5: READY ●</div>
         </header>
 
         <div class="viewport">
             <div id="chart-widget-container"></div>
             <aside class="intel-sidebar">
-                <span class="news-tag" id="sentiment-status">AGUARDANDO ANÁLISE MACRO</span>
-                <div id="mentor-txt" class="mentor-bubble">Inicie a análise para que o Gemini leia as notícias globais e cruze com o gráfico.</div>
+                <small style="color:var(--gold); font-weight: 800;">IA MENTOR ESTRATEGISTA</small>
+                <div id="mentor-txt" class="mentor-bubble" style="margin-top:10px;">Aguardando sinal...</div>
                 <button class="btn-ai" onclick="runMacroAnalysis()">Análise Macro & Sniper</button>
             </aside>
         </div>
@@ -87,7 +89,8 @@
                 "style": "1",
                 "locale": "br",
                 "container_id": "chart-widget-container",
-                "allow_symbol_change": true
+                "allow_symbol_change": false, // Trava o gráfico no app
+                "hide_side_toolbar": false
             });
         }
 
@@ -99,28 +102,23 @@
 
         async function runMacroAnalysis() {
             const mentor = document.getElementById('mentor-txt');
-            const status = document.getElementById('sentiment-status');
-            mentor.innerText = "Lendo notícias globais via NewsAPI...";
+            mentor.innerText = "Consultando NewsAPI...";
 
             try {
-                // 1. Capturar Manchetes
-                const newsRes = await fetch(`https://newsapi.org/v2/everything?q=${activeSymbol.split(':')[1]}&language=en&pageSize=3&apiKey=${SNIPER.NEWS_API}`);
+                // Tratamento de erro robusto para a NewsAPI
+                const newsRes = await fetch(`https://newsapi.org/v2/everything?q=${activeSymbol.split(':')[1]}&language=pt&pageSize=3&apiKey=${SNIPER.NEWS_API}`);
                 const newsData = await newsRes.json();
-                const headlines = newsData.articles.map(a => a.title).join(" | ");
 
-                // 2. Enviar para Gemini
-                mentor.innerText = "Gemini filtrando Euforia vs. Realidade...";
+                // Verifica se os artigos existem antes de usar .map()
+                let headlines = "Sem notícias recentes para este ativo.";
+                if (newsData && newsData.articles && newsData.articles.length > 0) {
+                    headlines = newsData.articles.map(a => a.title).join(" | ");
+                }
+
+                mentor.innerText = "Gemini processando cenário...";
                 const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${SNIPER.GEMINI_API}`;
                 
-                const prompt = `
-                    NOTÍCIAS DO MOMENTO: ${headlines}
-                    ATIVO: ${activeSymbol}
-                    Ação: O preço está no 0.618 de Fib.
-                    Resuma: 
-                    1. O sentimento é de euforia (varejo) ou dado macro real?
-                    2. Recomende: Sniper (Compra) ou Inversa (Venda se falhar 5 pips). 
-                    Seja curto (máximo 3 linhas).
-                `;
+                const prompt = `Trader Fábio solicita análise do par ${activeSymbol}. Notícias atuais: ${headlines}. Analise o sentimento (Varejo vs Profissional) e dê um veredito curto (Compra, Venda ou Inversa) baseado no Golden Pocket.`;
 
                 const res = await fetch(geminiUrl, {
                     method: 'POST',
@@ -131,14 +129,11 @@
                 const gData = await res.json();
                 const veredito = gData.candidates[0].content.parts[0].text;
                 
-                status.innerText = veredito.includes("euforia") ? "⚠️ VAREJO EUFÓRICO" : "🏦 FLUXO INSTITUCIONAL";
-                mentor.innerHTML = `<b>ANÁLISE MACRO:</b><br>${veredito}`;
-                
-                // Telegram
-                fetch(`https://api.telegram.org/bot${SNIPER.TG_TOKEN}/sendMessage?chat_id=${SNIPER.TG_CHATID}&text=${encodeURIComponent("MACRO ALERT: " + veredito)}`);
+                mentor.innerHTML = `<b>ANÁLISE SNIPER:</b><br>${veredito}`;
+                fetch(`https://api.telegram.org/bot${SNIPER.TG_TOKEN}/sendMessage?chat_id=${SNIPER.TG_CHATID}&text=${encodeURIComponent(veredito)}`);
 
             } catch (e) {
-                mentor.innerHTML = `<span style="color:var(--red)">Erro no processamento Macro: ${e.message}</span>`;
+                mentor.innerHTML = `<span style="color:var(--red)">Erro técnico: Verifique sua chave NewsAPI ou conexão.</span>`;
             }
         }
     </script>
