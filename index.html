@@ -4,33 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>SNIPER TERMINAL v7.2 | FORCE UPDATE</title>
+    <title>SNIPER TERMINAL v7.3 | TOTAL FIX</title>
     
-    <script>
-        (function() {
-            const currentVersion = '7.2';
-            const savedVersion = localStorage.getItem('sniper_version');
-            
-            if (savedVersion !== currentVersion) {
-                localStorage.clear();
-                localStorage.setItem('sniper_version', currentVersion);
-                
-                // Limpa Service Workers antigos
-                if ('serviceWorker' in navigator) {
-                    navigator.serviceWorker.getRegistrations().then(registrations => {
-                        for (let registration of registrations) {
-                            registration.unregister();
-                        }
-                    });
-                }
-                // Força recarga do servidor (ignore cache)
-                window.location.reload(true);
-            }
-        })();
-    </script>
-
     <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
     <style>
         :root { --bg: #020617; --card: #0f172a; --accent: #00ff88; --red: #ff4b2b; --text: #f8fafc; --gold: #fbbf24; }
@@ -41,15 +16,22 @@
         .login-card { background: var(--card); padding: 45px; border-radius: 24px; border: 1px solid var(--accent); text-align: center; width: 95%; max-width: 420px; }
         .btn-google { background: #fff; color: #000; border: none; width: 100%; padding: 16px; border-radius: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 25px; }
 
-        .sidebar { width: 75px; background: #010409; border-right: 1px solid #1e293b; display: flex; flex-direction: column; align-items: center; padding: 25px 0; gap: 20px; }
-        .asset-btn { width: 48px; height: 48px; border-radius: 12px; border: 1px solid #334155; background: var(--card); color: #94a3b8; font-size: 11px; font-weight: bold; cursor: pointer; }
+        .sidebar { width: 75px; background: #010409; border-right: 1px solid #1e293b; display: flex; flex-direction: column; align-items: center; padding: 25px 0; gap: 15px; overflow-y: auto; }
+        .asset-btn { width: 55px; height: 50px; border-radius: 12px; border: 1px solid #334155; background: var(--card); color: #94a3b8; font-size: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .asset-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0, 255, 136, 0.05); }
+
         .main-content { flex: 1; display: flex; flex-direction: column; }
-        .header { height: 65px; border-bottom: 1px solid #1e293b; display: flex; align-items: center; padding: 0 25px; justify-content: space-between; }
+        .header { height: 65px; border-bottom: 1px solid #1e293b; display: flex; align-items: center; padding: 0 20px; justify-content: space-between; }
         .viewport { flex: 1; display: grid; grid-template-columns: 1fr 320px; }
         #chart-container { width: 100%; height: 100%; position: relative; }
+
+        @media (max-width: 768px) {
+            .viewport { grid-template-columns: 1fr; grid-template-rows: 1fr 300px; }
+            .intel-sidebar { border-left: none; border-top: 1px solid #1e293b; }
+        }
+
         .intel-sidebar { background: var(--card); border-left: 1px solid #1e293b; padding: 20px; overflow-y: auto; }
-        .mentor-bubble { background: rgba(0, 255, 136, 0.03); border: 1px solid rgba(0, 255, 136, 0.1); padding: 18px; border-radius: 14px; font-size: 13px; line-height: 1.6; color: #cbd5e1; }
+        .mentor-bubble { background: rgba(0, 255, 136, 0.03); border: 1px solid rgba(0, 255, 136, 0.1); padding: 18px; border-radius: 14px; font-size: 13px; line-height: 1.6; color: #cbd5e1; min-height: 100px; }
         .btn-ai { background: linear-gradient(135deg, #00ff88, #0088cc); color: #020617; border: none; width: 100%; padding: 16px; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 20px; text-transform: uppercase; }
     </style>
 </head>
@@ -57,26 +39,28 @@
 
     <div id="auth-overlay">
         <div class="login-card">
-            <h1 style="color:var(--accent); font-size: 28px;">SNIPER v7.2</h1>
-            <p style="font-size:13px; color:#64748b; margin-top: 8px;">Versão de Atualização Forçada Ativada</p>
+            <h1 style="color:var(--accent); font-size: 28px;">SNIPER v7.3</h1>
+            <p style="font-size:13px; color:#64748b; margin-top: 8px;">Ajuste de Ativos e IA Mentor</p>
             <button class="btn-google" onclick="handleAuth()">
                 <img src="https://img.icons8.com/color/24/000000/google-logo.png" alt="Google"/>
-                Entrar com Google
+                Acessar Terminal
             </button>
         </div>
     </div>
 
     <nav class="sidebar">
-        <button class="asset-btn active" onclick="changeAsset('EURUSD')">EUR</button>
-        <button class="asset-btn" onclick="changeAsset('XAUUSD')">GOLD</button>
-        <button class="asset-btn" onclick="changeAsset('DXY')">DXY</button>
+        <button class="asset-btn active" id="btn-EURUSD" onclick="changeAsset('EURUSD')">EUR</button>
+        <button class="asset-btn" id="btn-GBPUSD" onclick="changeAsset('GBPUSD')">GBP</button>
+        <button class="asset-btn" id="btn-XAUUSD" onclick="changeAsset('XAUUSD')">GOLD</button>
+        <button class="asset-btn" id="btn-BTCUSD" onclick="changeAsset('BTCUSD')">BTC</button>
+        <button class="asset-btn" id="btn-DXY" onclick="changeAsset('DXY')">DXY</button>
     </nav>
 
     <div class="main-content">
         <header class="header">
             <div>
                 <h2 id="pair-display" style="color:var(--accent); font-size: 20px;">EUR / USD</h2>
-                <small id="user-info" style="color: #64748b; margin-left: 15px;">v7.2 ONLINE</small>
+                <small id="user-info" style="color: #64748b; margin-left: 15px;">v7.3 ONLINE</small>
             </div>
             <div style="font-size: 10px; color: var(--accent); text-align: right;">
                 SUPABASE: OK ●<br>
@@ -89,9 +73,9 @@
             <aside class="intel-sidebar">
                 <small style="color:var(--gold); font-weight: 800; text-transform: uppercase; font-size: 10px;">Análise Estratégica IA</small>
                 <div id="mentor-txt" class="mentor-bubble" style="margin-top:12px;">
-                    Sr. Fábio, se você está lendo esta mensagem, o sistema atualizou com sucesso para a v7.2.
+                    Clique abaixo para processar a análise técnica do ativo selecionado.
                 </div>
-                <button class="btn-ai" onclick="getAiAnalysis()">Solicitar Análise Gemini</button>
+                <button class="btn-ai" id="btn-ai-trigger" onclick="getAiAnalysis()">Solicitar Análise Gemini</button>
             </aside>
         </div>
     </div>
@@ -106,23 +90,50 @@
             TG_CHATID: '6072254244'
         };
 
+        let currentAsset = "EURUSD";
+
         async function handleAuth() {
             localStorage.setItem('sniper_session', 'trader_fabio@gmail.com');
             document.getElementById('auth-overlay').style.display = 'none';
         }
 
+        function changeAsset(asset) {
+            currentAsset = asset;
+            document.getElementById('pair-display').innerText = asset.replace('USD', ' / USD');
+            
+            // Atualiza botões
+            document.querySelectorAll('.asset-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-' + asset).classList.add('active');
+            
+            // Simulação de troca de gráfico
+            mentorTxt.innerText = "Monitorando fluxos para " + asset + "...";
+        }
+
         async function getAiAnalysis() {
             const mentor = document.getElementById('mentor-txt');
-            mentor.innerText = "Processando dados v7.2...";
+            mentor.innerText = "Invocando Gemini para " + currentAsset + "...";
+            
+            const prompt = `Trader Fábio solicita análise técnica profissional para o par ${currentAsset}. Considere o Fibonacci 0.618 e o sentimento institucional. Dê uma direção objetiva (Compra, Venda ou Aguardar).`;
+
             try {
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${SNIPER.GEMINI_API}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: "Dê uma dica curta de trade para EURUSD hoje." }] }] })
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
                 });
+                
+                if (!res.ok) throw new Error("Status: " + res.status);
+                
                 const data = await res.json();
-                mentor.innerHTML = `<b>IA v7.2:</b><br>${data.candidates[0].content.parts[0].text}`;
-            } catch (e) { mentor.innerText = "Erro na IA."; }
+                const analysis = data.candidates[0].content.parts[0].text;
+                mentor.innerHTML = `<b>RELATÓRIO MENTOR (${currentAsset}):</b><br>${analysis}`;
+                
+                // Telegram
+                fetch(`https://api.telegram.org/bot${SNIPER.TG_TOKEN}/sendMessage?chat_id=${SNIPER.TG_CHATID}&text=${encodeURIComponent("ESTRATÉGIA " + currentAsset + ": " + analysis)}`);
+            } catch (e) { 
+                console.error("Erro IA:", e);
+                mentor.innerHTML = "<span style='color:var(--red)'>Erro na IA: Verifique a cota da API Gemini no Google AI Studio.</span>"; 
+            }
         }
 
         const chart = LightweightCharts.createChart(document.getElementById('chart-container'), {
@@ -132,6 +143,7 @@
         const candleSeries = chart.addCandlestickSeries({ upColor: '#00ff88', downColor: '#ff4b2b', borderVisible: false });
         candleSeries.setData([{ time: '2026-02-18', open: 1.1850, high: 1.1880, low: 1.1830, close: 1.1870 }]);
 
+        const mentorTxt = document.getElementById('mentor-txt');
         if(localStorage.getItem('sniper_session')) document.getElementById('auth-overlay').style.display = 'none';
     </script>
 </body>
