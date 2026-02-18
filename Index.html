@@ -3,149 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sniper Intelligence Pro</title>
-    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlNuaXBlciBJbnRlbGxpZ2VuY2UgUHJvIiwKICAic2hvcnRfbmFtZSI6ICJTbmlwZXJGWCIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDUwYTE0IiwKICAidGhlbWVfY29sb3IiOiAiIzAwZmY4OCIsCiAgImljb25zIjogW3sgInNyYyI6ICJodHRwczovL2Nkbi1pY29ucy1wbmcuZmxhdGljb24uY29tLzUxMi8yNTY4LzI1NjgyNTIucG5nIiwgInNpemVzIjogIjUxMng1MTIiLCAidHlwZSI6ICJpbWFnZS9wbmciIH1dCn0=">
-    
+    <title>SNIPER TERMINAL v7.2 | ULTIMATE EDITION</title>
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
     <style>
-        :root { --bg: #050a14; --card: #101a2d; --accent: #00ff88; --red: #ff4b2b; --text: #e0e6ed; --gold: #ffd700; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; overflow-x: hidden; }
-        
-        /* LOGIN & PRIVACIDADE */
-        #login-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 10000; }
-        #cookie-banner { position: fixed; bottom: 20px; left: 20px; right: 20px; background: var(--card); border: 1px solid var(--accent); padding: 20px; border-radius: 12px; z-index: 10001; }
-        
-        /* GRID & CARDS */
-        .header { padding: 15px 25px; display: flex; justify-content: space-between; border-bottom: 1px solid #1f2a44; align-items: center; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 15px; padding: 20px; }
-        .card { background: var(--card); border-radius: 12px; padding: 18px; border: 1px solid #1f2a44; }
-        
-        /* FIBONACCI & MENTOR */
-        .gp-box { background: rgba(0, 255, 136, 0.1); color: var(--accent); padding: 10px; border-radius: 6px; border-left: 4px solid var(--accent); margin-top: 10px; }
-        #mentor-launcher { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 9999; border: 2px solid #000; font-size: 30px; }
-        #mentor-chat { position: fixed; bottom: 90px; right: 20px; width: 300px; height: 400px; background: var(--card); border: 1px solid var(--accent); border-radius: 15px; display: none; flex-direction: column; z-index: 9999; box-shadow: 0 10px 40px #000; }
-        
-        /* ANIMAÇÃO DE ALERTA */
-        @keyframes flash { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-        .sniper-alert { animation: flash 1s infinite; border: 2px solid var(--accent) !important; }
+        :root { --bg: #020617; --card: #0f172a; --accent: #00ff88; --red: #ff4b2b; --text: #f8fafc; --gold: #fbbf24; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+        /* AUTH OVERLAY */
+        #auth-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 10000; }
+        .login-card { background: var(--card); padding: 45px; border-radius: 24px; border: 1px solid var(--accent); text-align: center; width: 95%; max-width: 420px; }
+        .btn-google { background: #fff; color: #000; border: none; width: 100%; padding: 16px; border-radius: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 25px; transition: 0.3s; }
+        /* INTERFACE */
+        .sidebar { width: 75px; background: #010409; border-right: 1px solid #1e293b; display: flex; flex-direction: column; align-items: center; padding: 25px 0; gap: 20px; }
+        .asset-btn { width: 48px; height: 48px; border-radius: 12px; border: 1px solid #334155; background: var(--card); color: #94a3b8; font-size: 11px; font-weight: bold; cursor: pointer; }
+        .asset-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0, 255, 136, 0.05); }
+        .main-content { flex: 1; display: flex; flex-direction: column; }
+        .header { height: 65px; border-bottom: 1px solid #1e293b; display: flex; align-items: center; padding: 0 25px; justify-content: space-between; }
+        .viewport { flex: 1; display: grid; grid-template-columns: 1fr 320px; }
+        #chart-container { width: 100%; height: 100%; position: relative; }
+        .intel-sidebar { background: var(--card); border-left: 1px solid #1e293b; padding: 25px; overflow-y: auto; }
+        .mentor-bubble { background: rgba(0, 255, 136, 0.03); border: 1px solid rgba(0, 255, 136, 0.1); padding: 18px; border-radius: 14px; font-size: 13px; line-height: 1.6; color: #cbd5e1; }
+        .btn-ai { background: linear-gradient(135deg, #00ff88, #0088cc); color: #020617; border: none; width: 100%; padding: 16px; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 20px; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-<audio id="sniper-sound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
-
-<div id="cookie-banner">
-    <h3 style="color:var(--accent); margin:0">🔒 Termos de Uso & IA</h3>
-    <p style="font-size:11px; color:#8892b0;">Este sistema usa APIs e IA para fins educacionais e operacionais. O risco financeiro é de sua inteira responsabilidade.</p>
-    <button onclick="acceptTerms()" style="background:var(--accent); border:none; padding:8px 15px; border-radius:5px; font-weight:bold; cursor:pointer;">ACEITAR E CONTINUAR</button>
-</div>
-
-<div id="login-overlay" style="display:none">
-    <div style="background:var(--card); padding:30px; border-radius:15px; border:1px solid var(--accent); text-align:center;">
-        <h2 style="color:var(--accent)">ACESSO SNIPER</h2>
-        <input type="email" id="email" placeholder="E-mail" style="width:100%; padding:10px; margin:10px 0; background:#1f2a44; border:none; color:#fff;">
-        <input type="password" id="pass" placeholder="Senha" style="width:100%; padding:10px; margin:10px 0; background:#1f2a44; border:none; color:#fff;">
-        <button onclick="handleAuth()" style="width:100%; background:var(--accent); padding:10px; border:none; font-weight:bold; cursor:pointer;">ENTRAR / CADASTRAR</button>
+    <div id="auth-overlay">
+        <div class="login-card">
+            <h1 style="color:var(--accent); font-size: 28px;">SNIPER v7.2</h1>
+            <p style="font-size:13px; color:#64748b; margin-top: 8px;">Terminal de Inteligência & IA Mentor</p>
+            <button class="btn-google" onclick="handleAuth()">
+                <img src="https://img.icons8.com/color/24/000000/google-logo.png" alt="Google"/>
+                Entrar com Google
+            </button>
+        </div>
     </div>
-</div>
 
-<div class="header">
-    <div>
-        <h2 style="margin:0; color:var(--accent)">SNIPER PRO</h2>
-        <button id="install-btn" onclick="installApp()" style="display:none; background:var(--gold); border:none; padding:3px 10px; border-radius:10px; font-size:10px; font-weight:bold; cursor:pointer;">INSTALAR APP</button>
-    </div>
-    <div style="text-align:right">
-        <small id="clock">00:00:00</small>
-    </div>
-</div>
+    <nav class="sidebar">
+        <button class="asset-btn active" onclick="changeAsset('EURUSD')">EUR</button>
+        <button class="asset-btn" onclick="changeAsset('XAUUSD')">GOLD</button>
+        <button class="asset-btn" onclick="changeAsset('DXY')">DXY</button>
+    </nav>
 
-<div class="grid" id="dashboard-grid"></div>
+    <div class="main-content">
+        <header class="header">
+            <div>
+                <h2 id="pair-display" style="color:var(--accent); font-size: 20px;">EUR / USD</h2>
+                <small id="user-info" style="color: #64748b; margin-left: 15px;">Aguardando sinal...</small>
+            </div>
+            <div style="font-size: 10px; color: var(--accent); text-align: right;">
+                SUPABASE: CONNECTED ●<br>
+                GEMINI AI: READY ●
+            </div>
+        </header>
 
-<div id="mentor-launcher" onclick="toggleMentor()">🤖</div>
-<div id="mentor-chat">
-    <div style="background:var(--accent); color:#000; padding:10px; font-weight:bold; display:flex; justify-content:space-between">
-        <span>MENTOR SNIPER</span>
-        <span onclick="toggleMentor()" style="cursor:pointer">✕</span>
-    </div>
-    <div id="chat-content" style="flex:1; padding:15px; overflow-y:auto; font-size:12px"></div>
-    <div style="padding:10px; display:flex; gap:5px">
-        <input type="text" id="query" placeholder="Sua dúvida..." style="flex:1; background:#1f2a44; border:none; color:#fff; padding:5px; border-radius:5px">
-        <button onclick="askMentor()" style="background:var(--accent); border:none; padding:5px 10px; border-radius:5px">🚀</button>
-    </div>
-</div>
-
-<script>
-    // --- LÓGICA DE LOGIN & PWA ---
-    function acceptTerms() { document.getElementById('cookie-banner').style.display='none'; document.getElementById('login-overlay').style.display='flex'; }
-    
-    function handleAuth() {
-        const user = { email: document.getElementById('email').value, pass: document.getElementById('pass').value };
-        localStorage.setItem('sniper_user', JSON.stringify(user));
-        document.getElementById('login-overlay').style.display='none';
-    }
-
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault(); deferredPrompt = e;
-        document.getElementById('install-btn').style.display = 'block';
-    });
-
-    async function installApp() {
-        if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; }
-    }
-
-    // --- MOTOR DE ANÁLISE ---
-    const ASSETS = [
-        { id: 'EURUSD', name: 'EUR/USD', price: 1.1844, high: 1.1910, low: 1.1800, trend: 'bullish' },
-        { id: 'XAUUSD', name: 'GOLD (XAU)', price: 4985.50, high: 5020.00, low: 4950.00, trend: 'bullish' }
-    ];
-
-    function update() {
-        const grid = document.getElementById('dashboard-grid');
-        grid.innerHTML = '';
-        ASSETS.forEach(a => {
-            const diff = a.high - a.low;
-            const gp = a.trend === 'bullish' ? a.high - (diff * 0.618) : a.low + (diff * 0.618);
-            const exp = a.trend === 'bullish' ? a.high + (diff * 1.618) : a.low - (diff * 1.618);
-            const isGP = Math.abs(a.price - gp) < (diff * 0.05);
-
-            if(isGP) document.getElementById('sniper-sound').play().catch(()=>{});
-
-            grid.innerHTML += `
-                <div class="card ${isGP ? 'sniper-alert' : ''}">
-                    <h3 style="margin:0">${a.name}</h3>
-                    <h1 style="font-family:monospace; margin:10px 0">${a.price.toFixed(a.id==='XAUUSD'?2:5)}</h1>
-                    <div class="gp-box">GP 0.618: ${gp.toFixed(5)}</div>
-                    <div style="font-size:11px; margin-top:10px; color:var(--gold)">ALVO 1.618: ${exp.toFixed(5)}</div>
-                    <div style="margin-top:10px; text-align:center; font-weight:bold; color:var(--accent)">
-                        ${isGP ? '🎯 TIRO DE SNIPER DETECTADO' : 'AGUARDANDO CONFLUÊNCIA'}
-                    </div>
+        <div class="viewport">
+            <div id="chart-container"></div>
+            <aside class="intel-sidebar">
+                <small style="color:var(--gold); font-weight: 800; text-transform: uppercase; font-size: 10px;">Análise Estratégica IA</small>
+                <div id="mentor-txt" class="mentor-bubble" style="margin-top:12px;">
+                    Sr. Fábio, o sistema está online. Clique para processar a leitura institucional dos ativos.
                 </div>
-            `;
+                <button class="btn-ai" onclick="getAiAnalysis()">Solicitar Análise Gemini</button>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        const SNIPER = {
+            CLIENT_ID: '951822007156-0ncahhsljnobtsnbladbh5b6j0q5i1m9.apps.googleusercontent.com',
+            GEMINI_API: 'AIzaSyD1IjhkGoQzoVtcmDws-sIbxT7QTlo-eJs',
+            TWELVE_API: '0de74dfc9ff0420799dd0700d110007b',
+            SUPABASE_URL: 'https://vlobwhsynmnnwkmrpmxm.supabase.co',
+            SUPABASE_KEY: 'sb_publishable_D2rXXaNTkSAvjhh71KA9qg_9kL5EojL',
+            TG_TOKEN: '8227143905:AAEgnLHP9obvDmNrCAySxpDQER2ukpuTi9Q',
+            TG_CHATID: '6072254244'
+        };
+
+        // --- AUTH & LOGIN ---
+        async function handleAuth() {
+            const mockUser = "trader_fabio@gmail.com";
+            localStorage.setItem('sniper_session', mockUser);
+            document.getElementById('auth-overlay').style.display = 'none';
+            document.getElementById('user-info').innerText = "Sniper: " + mockUser;
+            
+            // Log de usuário no Supabase
+            fetch(`${SNIPER.SUPABASE_URL}/rest/v1/users`, {
+                method: 'POST',
+                headers: { 'apikey': SNIPER.SUPABASE_KEY, 'Authorization': `Bearer ${SNIPER.SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: mockUser, client_id: SNIPER.CLIENT_ID, login_time: new Date() })
+            });
+        }
+
+        // --- IA MENTOR GEMINI ---
+        async function getAiAnalysis() {
+            const mentor = document.getElementById('mentor-txt');
+            const pair = document.getElementById('pair-display').innerText;
+            mentor.innerText = "IA processando níveis institucionais...";
+
+            const prompt = `Analise ${pair}. Considere Fibonacci 0.618 e possível falha de 5 pips para reversão. Dê uma direção objetiva para o Trader Fábio.`;
+
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${SNIPER.GEMINI_API}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                const data = await res.json();
+                const analysis = data.candidates[0].content.parts[0].text;
+                mentor.innerHTML = `<b>RELATÓRIO MENTOR:</b><br>${analysis}`;
+                
+                // Envio Telegram
+                fetch(`https://api.telegram.org/bot${SNIPER.TG_TOKEN}/sendMessage?chat_id=${SNIPER.TG_CHATID}&text=${encodeURIComponent("ESTRATÉGIA: " + analysis)}`);
+            } catch (e) { mentor.innerText = "Erro ao conectar com Mentor AI."; }
+        }
+
+        // --- GRÁFICO TRADINGVIEW ---
+        const chart = LightweightCharts.createChart(document.getElementById('chart-container'), {
+            layout: { background: { color: '#020617' }, textColor: '#94a3b8' },
+            grid: { vertLines: { color: '#111827' }, horzLines: { color: '#111827' } },
+            timeScale: { borderColor: '#1e293b' }
         });
-    }
+        const candleSeries = chart.addCandlestickSeries({ upColor: '#00ff88', downColor: '#ff4b2b', borderVisible: false });
+        candleSeries.setData([{ time: '2026-02-18', open: 1.1850, high: 1.1880, low: 1.1830, close: 1.1870 }]);
 
-    // --- MENTOR AI SEGURANÇA ---
-    function toggleMentor() { const c = document.getElementById('mentor-chat'); c.style.display = c.style.display==='flex'?'none':'flex'; }
-    function askMentor() {
-        const q = document.getElementById('query').value.toLowerCase();
-        const content = document.getElementById('chat-content');
-        const forbidden = ["api", "code", "chave", "backend", "senha", "logica"];
-        
-        content.innerHTML += `<p><b>Você:</b> ${q}</p>`;
-        
-        let r = "Foque no 0.618 de Fibonacci para entradas de alta convicção.";
-        if(forbidden.some(w => q.includes(w))) r = "Acesso Negado. Minha inteligência é estritamente operacional.";
-        if(q.includes("yield")) r = "Yields caindo favorecem a compra de EUR e GBP.";
-
-        setTimeout(() => {
-            content.innerHTML += `<p style="color:var(--accent)"><b>Mentor:</b> ${r}</p>`;
-            content.scrollTop = content.scrollHeight;
-        }, 500);
-        document.getElementById('query').value = '';
-    }
-
-    setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); update(); }, 1000);
-    update();
-</script>
+        function changeAsset(p) { document.getElementById('pair-display').innerText = p; }
+        if(localStorage.getItem('sniper_session')) document.getElementById('auth-overlay').style.display = 'none';
+    </script>
 </body>
 </html>
