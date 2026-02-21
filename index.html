@@ -3,146 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SignalSync Pro | Intelligence Suite</title>
+    <title>SignalSync Pro | Institutional Intelligence</title>
     
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
     <style>
         :root { 
-            --bg: #050811; --card: rgba(15, 23, 42, 0.8); --accent: #00ff88; 
-            --red: #ff4b2b; --text: #f8fafc; --gold: #fbbf24; --blue: #0088cc;
-            --glass: blur(15px);
+            --bg: #030712; --card: rgba(17, 24, 39, 0.7); --accent: #00ff88; 
+            --red: #ff4b2b; --text: #f9fafb; --gold: #f59e0b; --blue: #3b82f6;
+            --glass: blur(16px); --border: rgba(255, 255, 255, 0.08);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; }
 
-        /* SIDEBAR PROFISSIONAL */
+        /* NAVEGAÇÃO VORTEX STYLE */
         .sidebar { 
-            width: 80px; background: rgba(1, 4, 9, 0.9); backdrop-filter: var(--glass);
-            border-right: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; align-items: center; padding: 25px 0; gap: 20px; z-index: 100;
+            width: 80px; background: rgba(0, 0, 0, 0.4); backdrop-filter: var(--glass);
+            border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 30px 0; gap: 20px; z-index: 100;
         }
         .nav-item {
-            width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.3s; background: rgba(255,255,255,0.03); color: #64748b; font-size: 10px; font-weight: 800; border: 1px solid transparent;
+            width: 52px; height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.4s; background: rgba(255, 255, 255, 0.02); color: #6b7280; font-weight: 800; border: 1px solid transparent;
         }
-        .nav-item.active { background: rgba(0, 255, 136, 0.1); border-color: var(--accent); color: var(--accent); box-shadow: 0 0 20px rgba(0,255,136,0.15); }
+        .nav-item.active { background: rgba(0, 255, 136, 0.08); border-color: var(--accent); color: var(--accent); box-shadow: 0 0 25px rgba(0, 255, 136, 0.2); }
 
         /* DASHBOARD */
-        .app-container { flex: 1; display: flex; flex-direction: column; position: relative; }
+        .app-container { flex: 1; display: flex; flex-direction: column; background: radial-gradient(circle at 50% 0%, #0f172a 0%, #030712 100%); }
         
-        .top-nav { 
+        .top-bar { 
             height: 70px; padding: 0 30px; display: flex; align-items: center; justify-content: space-between;
-            border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(5, 8, 17, 0.5); backdrop-filter: var(--glass);
+            border-bottom: 1px solid var(--border);
         }
 
-        .main-view { flex: 1; display: flex; padding: 15px; gap: 15px; overflow: hidden; }
-        #chart-zone { flex: 1; border-radius: 25px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .main-stage { flex: 1; display: flex; padding: 20px; gap: 20px; overflow: hidden; }
+        #tv-zone { flex: 1.8; border-radius: 28px; overflow: hidden; border: 1px solid var(--border); background: #000; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
 
-        /* INTEL SUITE (AURA & COGNITO) */
-        .intel-suite { width: 380px; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; padding-right: 5px; }
+        /* INTEL PANEL (AURA / COGNITO / MENTOR) */
+        .intel-panel { flex: 1; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; max-width: 420px; }
         
-        .card-intel { 
-            background: var(--card); backdrop-filter: var(--glass); border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.05); padding: 20px;
+        .intel-card { 
+            background: var(--card); backdrop-filter: var(--glass); border-radius: 24px;
+            border: 1px solid var(--border); padding: 24px; position: relative;
         }
 
-        .aura-meter { height: 6px; background: #1e293b; border-radius: 3px; margin: 10px 0; overflow: hidden; position: relative; }
-        .aura-fill { height: 100%; width: 50%; background: linear-gradient(90deg, var(--red), var(--accent)); transition: 1s cubic-bezier(0.4, 0, 0.2, 1); }
+        /* POKER-EYE SENTIMENT (AURA) */
+        .aura-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .aura-status { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        .aura-bar-container { height: 8px; background: #1f2937; border-radius: 4px; overflow: hidden; }
+        .aura-fill { height: 100%; background: linear-gradient(90deg, var(--red), var(--gold), var(--accent)); transition: 1.5s cubic-bezier(0.19, 1, 0.22, 1); }
 
-        .mentor-chat { font-size: 13px; line-height: 1.6; color: #cbd5e1; min-height: 120px; }
+        /* COGNITO (BIAS ANALYSIS) */
+        .cognito-tag { display: inline-block; padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; margin-bottom: 10px; }
+        .bias-fomo { background: rgba(245, 158, 11, 0.1); color: var(--gold); border: 1px solid var(--gold); }
+
+        /* MENTOR IA CHAT */
+        .mentor-text { font-size: 14px; line-height: 1.7; color: #d1d5db; min-height: 100px; }
         
-        .badge { font-size: 9px; padding: 3px 8px; border-radius: 5px; font-weight: 800; text-transform: uppercase; }
-        .badge-aura { background: rgba(0, 136, 204, 0.1); color: var(--blue); border: 1px solid var(--blue); }
-        .badge-cognito { background: rgba(251, 191, 36, 0.1); color: var(--gold); border: 1px solid var(--gold); }
-
         .btn-sync { 
-            background: linear-gradient(135deg, #00ff88, #0088cc); color: #020617; 
-            border: none; padding: 18px; border-radius: 15px; font-weight: 800; cursor: pointer;
-            width: 100%; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
+            background: linear-gradient(135deg, #00ff88 0%, #0088cc 100%); color: #000; 
+            border: none; padding: 20px; border-radius: 18px; font-weight: 800; cursor: pointer;
+            width: 100%; transition: 0.3s; text-transform: uppercase; letter-spacing: 1.5px;
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.2);
         }
+        .btn-sync:hover { transform: translateY(-2px); box-shadow: 0 15px 40px rgba(0, 255, 136, 0.3); }
 
-        /* SCROLLBAR CUSTOM */
-        .intel-suite::-webkit-scrollbar { width: 4px; }
-        .intel-suite::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
-
-        @media (max-width: 1100px) {
-            .main-view { flex-direction: column; overflow-y: auto; }
-            .intel-suite { width: 100%; }
-            #chart-zone { min-height: 400px; }
+        @media (max-width: 1200px) {
+            .main-stage { flex-direction: column; overflow-y: auto; }
+            .intel-panel { max-width: 100%; }
+            #tv-zone { min-height: 500px; flex: none; }
         }
     </style>
 </head>
 <body>
 
     <nav class="sidebar">
-        <div class="nav-item active" onclick="updatePair('FX:EURUSD')">EUR</div>
-        <div class="nav-item" onclick="updatePair('FX:GBPUSD')">GBP</div>
-        <div class="nav-item" onclick="updatePair('OANDA:XAUUSD')">GOLD</div>
-        <div class="nav-item" onclick="updatePair('BINANCE:BTCUSDT')">BTC</div>
-        <div class="nav-item" style="margin-top:auto; color:var(--red);" onclick="location.reload()">OFF</div>
+        <div class="nav-item active" onclick="changePair('FX:EURUSD')">EU</div>
+        <div class="nav-item" onclick="changePair('FX:GBPUSD')">GU</div>
+        <div class="nav-item" onclick="changePair('OANDA:XAUUSD')">AU</div>
+        <div class="nav-item" onclick="changePair('BINANCE:BTCUSDT')">₿</div>
+        <div class="nav-item" style="margin-top:auto; color:var(--red);" onclick="location.reload()">↺</div>
     </nav>
 
     <div class="app-container">
-        <header class="top-nav">
+        <header class="top-bar">
             <div>
-                <h1 style="font-size: 18px; font-weight: 800; letter-spacing: -1px;">SignalSync <span style="color:var(--accent)">PRO</span></h1>
-                <p id="asset-label" style="font-size: 10px; color: #64748b; font-weight: 800;">EURUSD | INSTITUTIONAL CORE</p>
+                <h1 style="font-size: 22px; font-weight: 800; letter-spacing: -1.5px;">SignalSync <span style="color:var(--accent)">PRO</span></h1>
+                <p id="pair-subtitle" style="font-size: 10px; color: #6b7280; font-weight: 800; text-transform: uppercase;">Multimodal Neural Terminal</p>
             </div>
             <div style="text-align: right;">
-                <div id="clock" style="font-family: 'JetBrains Mono'; font-size: 12px; color: #64748b;">00:00:00</div>
-                <div style="font-size: 9px; color: var(--accent); margin-top: 4px; font-weight: 800;">● GEMINI 1.5 MULTIMODAL ACTIVE</div>
+                <div id="live-clock" style="font-family: 'JetBrains Mono'; font-size: 13px; color: #9ca3af;">00:00:00</div>
+                <div style="font-size: 9px; color: var(--accent); margin-top: 5px; font-weight: 800;">● GEMINI 1.5 FLASH SECURE</div>
             </div>
         </header>
 
-        <main class="main-view">
-            <div id="chart-zone"></div>
+        <main class="main-stage">
+            <div id="tv-zone"></div>
 
-            <aside class="intel-suite">
+            <aside class="intel-panel">
                 
-                <div class="card-intel">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span class="badge badge-aura">Aura Intelligence</span>
-                        <span id="aura-label" style="font-size:10px; color:var(--accent);">Neutro</span>
+                <div class="intel-card">
+                    <div class="aura-header">
+                        <span style="color:var(--accent); font-size: 11px; font-weight: 800;">AURA INTELLIGENCE</span>
+                        <span id="aura-label" class="aura-status" style="color:var(--gold);">Analyzing Mood...</span>
                     </div>
-                    <div class="aura-meter"><div id="aura-bar" class="aura-fill" style="width:50%;"></div></div>
-                    <small style="font-size:9px; color:#64748b;">Psicologia Coletiva detectada em tempo real.</small>
+                    <div class="aura-bar-container"><div id="aura-fill" class="aura-fill" style="width: 50%;"></div></div>
+                    <p style="font-size: 10px; color: #6b7280; margin-top: 8px;">Pulsação Psicológica Coletiva em tempo real.</p>
                 </div>
 
-                <div class="card-intel">
-                    <span class="badge badge-cognito">Cognito Financeiro</span>
-                    <div id="cognito-box" style="margin-top:10px; font-size:11px; color:#94a3b8; font-style: italic;">
-                        Analisando viés de confirmação e interesse especulativo...
-                    </div>
-                </div>
-
-                <div class="card-intel" style="flex:1;">
-                    <div style="margin-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:10px;">
-                        <span style="color:var(--gold); font-weight:800; font-size:11px;">MENTOR IA: <span id="mentor-name">JARVIS</span></span>
-                    </div>
-                    <div id="mentor-txt" class="mentor-chat">
-                        Olá Sr. Fábio. Sou seu copiloto. Analiso dados institucionais para que você nunca jogue contra os "Big Players". O que deseja analisar agora?
+                <div class="intel-card">
+                    <span id="cognito-tag" class="cognito-tag bias-fomo">COGNITO BIAS</span>
+                    <div id="cognito-desc" style="font-size: 12px; color: #9ca3af; font-style: italic;">
+                        Aguardando varredura de tendências de pesquisa e sentiment social...
                     </div>
                 </div>
 
-                <button class="btn-sync" onclick="runSignalSyncIntel()">Sincronizar Inteligência</button>
+                <div class="intel-card" style="flex: 1;">
+                    <div style="margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;">
+                        <span style="color:var(--gold); font-weight: 800; font-size: 12px;">MENTOR IA: <span id="mentor-name">JARVIS</span></span>
+                        <span class="status-tag" style="font-size: 8px; color: var(--accent);">● ONLINE</span>
+                    </div>
+                    <div id="mentor-txt" class="mentor-text">
+                        Sr. Fábio, o terminal está pronto. Clique no botão de sincronização para que eu possa processar o cenário multimodal e identificar a pegada institucional no Golden Pocket.
+                    </div>
+                </div>
+
+                <button class="btn-sync" id="sync-btn" onclick="runSignalSync()">Sincronizar SignalSync</button>
 
             </aside>
         </main>
     </div>
 
     <script>
+        // CONFIGURAÇÃO SEGURA PARA VERCEL
+        // Se usar localmente, mude para sua chave. Se na Vercel, use a /api/analyze configurada.
         const CONFIG = {
-            GEMINI: 'AIzaSyD1IjhkGoQzoVtcmDws-sIbxT7QTlo-eJs',
-            NEWS: '821b7bb1311c454f9b0c92369865838c'
+            USE_BACKEND: false, // Mude para true após configurar a Serverless Function na Vercel
+            LOCAL_KEY: 'AIzaSyD1IjhkGoQzoVtcmDws-sIbxT7QTlo-eJs',
+            NEWS_KEY: '821b7bb1311c454f9b0c92369865838c'
         };
 
         let currentPair = 'FX:EURUSD';
 
-        function updatePair(pair) {
-            currentPair = pair;
-            document.getElementById('asset-label').innerText = pair.split(':')[1] + " | INSTITUTIONAL CORE";
+        function changePair(p) {
+            currentPair = p;
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             event.currentTarget.classList.add('active');
             initChart();
@@ -151,65 +156,74 @@
         function initChart() {
             new TradingView.widget({
                 "autosize": true, "symbol": currentPair, "interval": "15",
-                "theme": "dark", "style": "1", "locale": "br", "container_id": "chart-zone",
-                "hide_side_toolbar": false, "allow_symbol_change": true, "details": true
+                "theme": "dark", "style": "1", "locale": "br", "container_id": "tv-zone",
+                "hide_side_toolbar": false, "allow_symbol_change": true, "details": true,
+                "withdateranges": true, "studies": ["FibRetracement@tv-basicstudies"]
             });
         }
 
-        async function runSignalSyncIntel() {
+        async function runSignalSync() {
+            const btn = document.getElementById('sync-btn');
             const mentor = document.getElementById('mentor-txt');
-            const cognito = document.getElementById('cognito-box');
-            const auraBar = document.getElementById('aura-bar');
             const auraLabel = document.getElementById('aura-label');
+            const auraFill = document.getElementById('aura-fill');
+            const cognito = document.getElementById('cognito-desc');
 
-            mentor.innerHTML = "<span style='color:var(--accent)'>Iniciando processamento multimodal Gemini...</span>";
+            btn.disabled = true;
+            mentor.innerHTML = "<em>Iniciando varredura multimodal Gemini 1.5 Flash...</em>";
 
             try {
-                // 1. News Capture
-                const newsRes = await fetch(`https://newsapi.org/v2/everything?q=${currentPair.split(':')[1]}&pageSize=3&apiKey=${CONFIG.NEWS}`);
+                // 1. Coleta de Dados (NewsAPI)
+                const newsRes = await fetch(`https://newsapi.org/v2/everything?q=${currentPair.split(':')[1]}&pageSize=3&apiKey=${CONFIG.NEWS_KEY}`);
                 const nData = await newsRes.json();
-                const news = nData.articles ? nData.articles.map(a => a.title).join(". ") : "Sem notícias.";
+                const newsContext = nData.articles ? nData.articles.map(a => a.title).join(" | ") : "Cenário sem notícias de alto impacto.";
 
-                // 2. Gemini Hybrid Analysis (Aura + Cognito + Mentor)
-                const prompt = `
-                    Você é o Mentor IA do SignalSync Pro. Analise o par ${currentPair} com estas notícias: ${news}.
-                    
-                    Responda estritamente neste formato JSON:
-                    {
-                        "aura": "Humor do mercado (1 a 100)",
-                        "aura_label": "Ex: Euforia Irracional, Medo, Neutro",
-                        "cognito": "Identifique um viés psicológico (ex: FOMO, Viés de Confirmação)",
-                        "mentor": "Explicação curta para o Sr. Fábio sobre o que o Smart Money está fazendo no 0.618 de Fib."
-                    }
-                `;
+                // 2. Chamada IA (Ponte ou Direta)
+                const prompt = `Analise ${currentPair}. Notícias: ${newsContext}. 
+                Responda APENAS em JSON: {
+                    "aura_score": (0 a 100),
+                    "aura_mood": "Ex: Euforia, Medo, Ganância",
+                    "bias": "Ex: Viés de Confirmação, FOMO, Exaustão",
+                    "mentor_advice": "Explicação curta sobre o Smart Money no 0.618 Fib e a mente dos grandes players."
+                }`;
 
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${CONFIG.GEMINI}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-                });
+                let aiResponse;
+                if (CONFIG.USE_BACKEND) {
+                    const res = await fetch('/api/analyze', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ prompt: prompt })
+                    });
+                    aiResponse = await res.json();
+                } else {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${CONFIG.LOCAL_KEY}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                    });
+                    aiResponse = await res.json();
+                }
 
-                const data = await res.json();
-                const rawResponse = data.candidates[0].content.parts[0].text;
-                
-                // Limpeza e Parse do JSON (Tratando possíveis caracteres extras da IA)
-                const cleanJson = rawResponse.substring(rawResponse.indexOf('{'), rawResponse.lastIndexOf('}') + 1);
+                // Parse da Inteligência
+                const cleanJson = aiResponse.candidates[0].content.parts[0].text.replace(/```json|```/g, "");
                 const intel = JSON.parse(cleanJson);
 
-                // 3. Atualizar UI
-                auraBar.style.width = intel.aura + "%";
-                auraLabel.innerText = intel.aura_label;
-                cognito.innerText = "Viés detectado: " + intel.cognito;
-                mentor.innerHTML = `<strong>INSIGHT INSTITUCIONAL:</strong><br>${intel.mentor}`;
+                // 3. Update UI (O Pulo do Gato do SignalSync)
+                auraFill.style.width = intel.aura_score + "%";
+                auraLabel.innerText = intel.aura_mood;
+                cognito.innerText = "Viés psicológico dominante: " + intel.bias;
+                mentor.innerHTML = `<strong>INSIGHT DO MENTOR:</strong><br>${intel.mentor_advice}`;
 
-            } catch(e) { 
-                mentor.innerHTML = "Erro na sincronização. Verifique as chaves das APIs.";
-                console.error(e);
+            } catch (error) {
+                mentor.innerHTML = "Erro na Sincronização. Verifique se as APIs estão ativas ou se a cota foi atingida.";
+                console.error(error);
+            } finally {
+                btn.disabled = false;
             }
         }
 
         window.onload = initChart;
-        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+        setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
     </script>
 </body>
 </html>
