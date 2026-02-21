@@ -3,203 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SNIPER v9.1 | VORTEX EDITION</title>
+    <title>SignalSync Pro | Institutional Intelligence</title>
     
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
     <style>
         :root { 
-            --bg: #050811; --card: rgba(15, 23, 42, 0.7); --accent: #00ff88; 
-            --red: #ff4b2b; --text: #f8fafc; --gold: #fbbf24; 
-            --sidebar-w: 80px; --glass: blur(12px);
+            --bg: #030712; --card: rgba(17, 24, 39, 0.7); --accent: #00ff88; 
+            --red: #ff4b2b; --text: #f9fafb; --gold: #f59e0b; --blue: #3b82f6;
+            --glass: blur(16px); --border: rgba(255, 255, 255, 0.08);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; }
 
-        /* TELA DE AUTENTICAÇÃO (ESTILO VORTEX) */
-        #auth-page {
-            position: fixed; inset: 0; background: radial-gradient(circle at top right, #0a192f, #050811);
-            display: flex; align-items: center; justify-content: center; z-index: 10000;
-        }
-        .auth-container {
-            background: var(--card); backdrop-filter: var(--glass); padding: 50px;
-            border-radius: 30px; border: 1px solid rgba(255,255,255,0.05);
-            width: 100%; max-width: 450px; text-align: center;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-        }
-        .input-group { margin-bottom: 20px; text-align: left; }
-        .input-group label { font-size: 12px; color: #64748b; margin-bottom: 8px; display: block; }
-        .input-group input { 
-            width: 100%; background: rgba(255,255,255,0.03); border: 1px solid #1e293b;
-            padding: 14px; border-radius: 12px; color: #fff; outline: none; transition: 0.3s;
-        }
-        .input-group input:focus { border-color: var(--accent); background: rgba(0,255,136,0.02); }
-
-        /* DASHBOARD LAYOUT */
+        /* NAVEGAÇÃO VORTEX STYLE */
         .sidebar { 
-            width: var(--sidebar-w); background: rgba(1, 4, 9, 0.8); backdrop-filter: var(--glass);
-            border-right: 1px solid #1e293b; display: flex; flex-direction: column; align-items: center; padding: 30px 0; gap: 20px;
+            width: 80px; background: rgba(0, 0, 0, 0.4); backdrop-filter: var(--glass);
+            border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 30px 0; gap: 20px; z-index: 100;
         }
-        .nav-icon {
-            width: 50px; height: 50px; border-radius: 15px; border: 1px solid transparent;
-            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s;
-            background: rgba(255,255,255,0.02); color: #64748b; font-size: 10px; font-weight: bold;
+        .nav-item {
+            width: 52px; height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.4s; background: rgba(255, 255, 255, 0.02); color: #6b7280; font-weight: 800; border: 1px solid transparent;
         }
-        .nav-icon.active { background: rgba(0, 255, 136, 0.1); border-color: var(--accent); color: var(--accent); }
+        .nav-item.active { background: rgba(0, 255, 136, 0.08); border-color: var(--accent); color: var(--accent); box-shadow: 0 0 25px rgba(0, 255, 136, 0.2); }
 
-        .main-app { flex: 1; display: flex; flex-direction: column; background: url('https://vortexai.framer.website/bg-pattern.png'); }
+        /* DASHBOARD */
+        .app-container { flex: 1; display: flex; flex-direction: column; background: radial-gradient(circle at 50% 0%, #0f172a 0%, #030712 100%); }
         
         .top-bar { 
-            height: 70px; border-bottom: 1px solid #1e293b; padding: 0 30px;
-            display: flex; align-items: center; justify-content: space-between;
+            height: 70px; padding: 0 30px; display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid var(--border);
         }
 
-        .workspace { flex: 1; display: flex; padding: 15px; gap: 15px; }
-        #tv-container { flex: 1; border-radius: 20px; overflow: hidden; border: 1px solid #1e293b; background: #000; }
+        .main-stage { flex: 1; display: flex; padding: 20px; gap: 20px; overflow: hidden; }
+        #tv-zone { flex: 1.8; border-radius: 28px; overflow: hidden; border: 1px solid var(--border); background: #000; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
 
-        .ai-sidebar { 
-            width: 380px; display: flex; flex-direction: column; gap: 15px;
+        /* INTEL PANEL (AURA / COGNITO / MENTOR) */
+        .intel-panel { flex: 1; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; max-width: 420px; }
+        
+        .intel-card { 
+            background: var(--card); backdrop-filter: var(--glass); border-radius: 24px;
+            border: 1px solid var(--border); padding: 24px; position: relative;
         }
 
-        .vortex-card { 
-            background: var(--card); backdrop-filter: var(--glass); border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.05); padding: 25px;
-        }
+        /* POKER-EYE SENTIMENT (AURA) */
+        .aura-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .aura-status { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        .aura-bar-container { height: 8px; background: #1f2937; border-radius: 4px; overflow: hidden; }
+        .aura-fill { height: 100%; background: linear-gradient(90deg, var(--red), var(--gold), var(--accent)); transition: 1.5s cubic-bezier(0.19, 1, 0.22, 1); }
 
-        .btn-vortex { 
-            background: linear-gradient(135deg, #00ff88, #0088cc); color: #020617; 
-            border: none; padding: 18px; border-radius: 15px; font-weight: 800; cursor: pointer;
-            width: 100%; transition: 0.3s; box-shadow: 0 10px 20px rgba(0,255,136,0.2);
-        }
-        .btn-vortex:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(0,255,136,0.3); }
+        /* COGNITO (BIAS ANALYSIS) */
+        .cognito-tag { display: inline-block; padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; margin-bottom: 10px; }
+        .bias-fomo { background: rgba(245, 158, 11, 0.1); color: var(--gold); border: 1px solid var(--gold); }
 
-        @media (max-width: 1024px) {
-            .workspace { flex-direction: column; overflow-y: auto; }
-            .ai-sidebar { width: 100%; }
-            #tv-container { min-height: 450px; }
+        /* MENTOR IA CHAT */
+        .mentor-text { font-size: 14px; line-height: 1.7; color: #d1d5db; min-height: 100px; }
+        
+        .btn-sync { 
+            background: linear-gradient(135deg, #00ff88 0%, #0088cc 100%); color: #000; 
+            border: none; padding: 20px; border-radius: 18px; font-weight: 800; cursor: pointer;
+            width: 100%; transition: 0.3s; text-transform: uppercase; letter-spacing: 1.5px;
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.2);
+        }
+        .btn-sync:hover { transform: translateY(-2px); box-shadow: 0 15px 40px rgba(0, 255, 136, 0.3); }
+
+        @media (max-width: 1200px) {
+            .main-stage { flex-direction: column; overflow-y: auto; }
+            .intel-panel { max-width: 100%; }
+            #tv-zone { min-height: 500px; flex: none; }
         }
     </style>
 </head>
 <body>
 
-    <div id="auth-page">
-        <div class="auth-container">
-            <h2 style="color:var(--accent); font-size: 28px; margin-bottom: 5px;">VORTEX SNIPER</h2>
-            <p style="color:#64748b; font-size: 14px; margin-bottom: 35px;">Acesse a inteligência preditiva institucional.</p>
-            
-            <div class="input-group">
-                <label>E-MAIL INSTITUCIONAL</label>
-                <input type="email" id="auth-email" placeholder="nome@exemplo.com">
-            </div>
-            <div class="input-group">
-                <label>SENHA DE ACESSO</label>
-                <input type="password" id="auth-pass" placeholder="••••••••">
-            </div>
-
-            <button class="btn-vortex" onclick="enterDashboard()">INICIAR SESSÃO</button>
-            <p style="margin-top:20px; font-size: 12px; color:#475569;">Não possui conta? <span style="color:var(--accent); cursor:pointer;">Criar uma agora.</span></p>
-        </div>
-    </div>
-
     <nav class="sidebar">
-        <div class="nav-icon active" onclick="changePair('FX:EURUSD')">EUR</div>
-        <div class="nav-icon" onclick="changePair('FX:GBPUSD')">GBP</div>
-        <div class="nav-icon" onclick="changePair('OANDA:XAUUSD')">GOLD</div>
-        <div class="nav-icon" onclick="changePair('BINANCE:BTCUSDT')">BTC</div>
-        <div class="nav-icon" style="margin-top:auto; border-color:var(--red); color:var(--red);" onclick="location.reload()">SAIR</div>
+        <div class="nav-item active" onclick="changePair('FX:EURUSD')">EU</div>
+        <div class="nav-item" onclick="changePair('FX:GBPUSD')">GU</div>
+        <div class="nav-item" onclick="changePair('OANDA:XAUUSD')">AU</div>
+        <div class="nav-item" onclick="changePair('BINANCE:BTCUSDT')">₿</div>
+        <div class="nav-item" style="margin-top:auto; color:var(--red);" onclick="location.reload()">↺</div>
     </nav>
 
-    <main class="main-app">
-        <div class="top-bar">
+    <div class="app-container">
+        <header class="top-bar">
             <div>
-                <span id="display-asset" style="font-size: 20px; font-weight: 800;">EUR / USD</span>
-                <span style="color:var(--accent); font-size: 10px; margin-left: 10px;">● LIVE MARKET</span>
+                <h1 style="font-size: 22px; font-weight: 800; letter-spacing: -1.5px;">SignalSync <span style="color:var(--accent)">PRO</span></h1>
+                <p id="pair-subtitle" style="font-size: 10px; color: #6b7280; font-weight: 800; text-transform: uppercase;">Multimodal Neural Terminal</p>
             </div>
-            <div id="clock" style="font-family: 'JetBrains Mono'; font-size: 14px; color:#64748b;">00:00:00</div>
-        </div>
+            <div style="text-align: right;">
+                <div id="live-clock" style="font-family: 'JetBrains Mono'; font-size: 13px; color: #9ca3af;">00:00:00</div>
+                <div style="font-size: 9px; color: var(--accent); margin-top: 5px; font-weight: 800;">● GEMINI 1.5 FLASH SECURE</div>
+            </div>
+        </header>
 
-        <div class="workspace">
-            <div id="tv-container"></div>
+        <main class="main-stage">
+            <div id="tv-zone"></div>
 
-            <aside class="ai-sidebar">
-                <div class="vortex-card" style="flex:1;">
-                    <span style="color:var(--gold); font-weight: 800; font-size: 10px; letter-spacing: 2px;">IA MENTOR ANALYSIS</span>
-                    <div id="mentor-ai-box" style="margin-top:15px; font-size: 13.5px; line-height: 1.7; color:#cbd5e1;">
-                        Pronto para processar o cenário. A análise cruzará notícias macro, sentiment social e níveis de 0.618 Fib.
+            <aside class="intel-panel">
+                
+                <div class="intel-card">
+                    <div class="aura-header">
+                        <span style="color:var(--accent); font-size: 11px; font-weight: 800;">AURA INTELLIGENCE</span>
+                        <span id="aura-label" class="aura-status" style="color:var(--gold);">Analyzing Mood...</span>
+                    </div>
+                    <div class="aura-bar-container"><div id="aura-fill" class="aura-fill" style="width: 50%;"></div></div>
+                    <p style="font-size: 10px; color: #6b7280; margin-top: 8px;">Pulsação Psicológica Coletiva em tempo real.</p>
+                </div>
+
+                <div class="intel-card">
+                    <span id="cognito-tag" class="cognito-tag bias-fomo">COGNITO BIAS</span>
+                    <div id="cognito-desc" style="font-size: 12px; color: #9ca3af; font-style: italic;">
+                        Aguardando varredura de tendências de pesquisa e sentiment social...
                     </div>
                 </div>
 
-                <div class="vortex-card">
-                    <button class="btn-vortex" onclick="runVortexAnalysis()">SOLICITAR ANÁLISE IA</button>
+                <div class="intel-card" style="flex: 1;">
+                    <div style="margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;">
+                        <span style="color:var(--gold); font-weight: 800; font-size: 12px;">MENTOR IA: <span id="mentor-name">JARVIS</span></span>
+                        <span class="status-tag" style="font-size: 8px; color: var(--accent);">● ONLINE</span>
+                    </div>
+                    <div id="mentor-txt" class="mentor-text">
+                        Sr. Fábio, o terminal está pronto. Clique no botão de sincronização para que eu possa processar o cenário multimodal e identificar a pegada institucional no Golden Pocket.
+                    </div>
                 </div>
 
-                <div class="vortex-card" style="padding: 15px;">
-                    <div style="display:flex; justify-content:space-between; font-size: 10px;">
-                        <span>SENTIMENT INDEX</span>
-                        <span style="color:var(--accent)">INSTITUTIONAL BUY</span>
-                    </div>
-                    <div style="height:4px; background:#1e293b; border-radius:2px; margin-top:8px;">
-                        <div style="width:72%; height:100%; background:var(--accent); border-radius:2px;"></div>
-                    </div>
-                </div>
+                <button class="btn-sync" id="sync-btn" onclick="runSignalSync()">Sincronizar SignalSync</button>
+
             </aside>
-        </div>
-    </main>
+        </main>
+    </div>
 
     <script>
-        const API = {
-            GEMINI: 'AIzaSyD1IjhkGoQzoVtcmDws-sIbxT7QTlo-eJs',
-            NEWS: '821b7bb1311c454f9b0c92369865838c'
+        // CONFIGURAÇÃO SEGURA PARA VERCEL
+        // Se usar localmente, mude para sua chave. Se na Vercel, use a /api/analyze configurada.
+        const CONFIG = {
+            USE_BACKEND: false, // Mude para true após configurar a Serverless Function na Vercel
+            LOCAL_KEY: 'AIzaSyD1IjhkGoQzoVtcmDws-sIbxT7QTlo-eJs',
+            NEWS_KEY: '821b7bb1311c454f9b0c92369865838c'
         };
 
-        let currentSymbol = 'FX:EURUSD';
+        let currentPair = 'FX:EURUSD';
 
-        function enterDashboard() {
-            const email = document.getElementById('auth-email').value;
-            if(email) {
-                document.getElementById('auth-page').style.display = 'none';
-                loadChart();
-            } else { alert("Insira seu e-mail institucional."); }
+        function changePair(p) {
+            currentPair = p;
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            initChart();
         }
 
-        function changePair(sym) {
-            currentSymbol = sym;
-            document.getElementById('display-asset').innerText = sym.includes('BTC') ? 'BTC / USDT' : sym.split(':')[1].replace('USD', ' / USD');
-            loadChart();
-        }
-
-        function loadChart() {
+        function initChart() {
             new TradingView.widget({
-                "autosize": true, "symbol": currentSymbol, "interval": "15",
-                "theme": "dark", "style": "1", "locale": "br", "container_id": "tv-container",
-                "hide_side_toolbar": false, "allow_symbol_change": true
+                "autosize": true, "symbol": currentPair, "interval": "15",
+                "theme": "dark", "style": "1", "locale": "br", "container_id": "tv-zone",
+                "hide_side_toolbar": false, "allow_symbol_change": true, "details": true,
+                "withdateranges": true, "studies": ["FibRetracement@tv-basicstudies"]
             });
         }
 
-        async function runVortexAnalysis() {
-            const box = document.getElementById('mentor-ai-box');
-            box.innerHTML = "<em>Sincronizando NewsAPI e processando Golden Pocket...</em>";
+        async function runSignalSync() {
+            const btn = document.getElementById('sync-btn');
+            const mentor = document.getElementById('mentor-txt');
+            const auraLabel = document.getElementById('aura-label');
+            const auraFill = document.getElementById('aura-fill');
+            const cognito = document.getElementById('cognito-desc');
+
+            btn.disabled = true;
+            mentor.innerHTML = "<em>Iniciando varredura multimodal Gemini 1.5 Flash...</em>";
 
             try {
-                // Notícias
-                const newsRes = await fetch(`https://newsapi.org/v2/everything?q=${currentSymbol.split(':')[1]}&pageSize=3&apiKey=${API.NEWS}`);
+                // 1. Coleta de Dados (NewsAPI)
+                const newsRes = await fetch(`https://newsapi.org/v2/everything?q=${currentPair.split(':')[1]}&pageSize=3&apiKey=${CONFIG.NEWS_KEY}`);
                 const nData = await newsRes.json();
-                const newsContext = nData.articles ? nData.articles.map(a => a.title).join(" | ") : "Cenário estável.";
+                const newsContext = nData.articles ? nData.articles.map(a => a.title).join(" | ") : "Cenário sem notícias de alto impacto.";
 
-                // Gemini
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API.GEMINI}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: `Analise o par ${currentSymbol}. Notícias: ${newsContext}. Foque no Fibonacci 0.618 e sentimento social Varejo vs Institucional. Se falhar 5 pips no GP, recomende Inversa. Seja curto.` }] }] })
-                });
-                const gData = await res.json();
-                box.innerHTML = `<strong>VORTEX VERDICT:</strong><br>${gData.candidates[0].content.parts[0].text.replace(/\n/g, '<br>')}`;
-            } catch(e) { box.innerHTML = "Erro na conexão. Verifique suas APIs."; }
+                // 2. Chamada IA (Ponte ou Direta)
+                const prompt = `Analise ${currentPair}. Notícias: ${newsContext}. 
+                Responda APENAS em JSON: {
+                    "aura_score": (0 a 100),
+                    "aura_mood": "Ex: Euforia, Medo, Ganância",
+                    "bias": "Ex: Viés de Confirmação, FOMO, Exaustão",
+                    "mentor_advice": "Explicação curta sobre o Smart Money no 0.618 Fib e a mente dos grandes players."
+                }`;
+
+                let aiResponse;
+                if (CONFIG.USE_BACKEND) {
+                    const res = await fetch('/api/analyze', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ prompt: prompt })
+                    });
+                    aiResponse = await res.json();
+                } else {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${CONFIG.LOCAL_KEY}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                    });
+                    aiResponse = await res.json();
+                }
+
+                // Parse da Inteligência
+                const cleanJson = aiResponse.candidates[0].content.parts[0].text.replace(/```json|```/g, "");
+                const intel = JSON.parse(cleanJson);
+
+                // 3. Update UI (O Pulo do Gato do SignalSync)
+                auraFill.style.width = intel.aura_score + "%";
+                auraLabel.innerText = intel.aura_mood;
+                cognito.innerText = "Viés psicológico dominante: " + intel.bias;
+                mentor.innerHTML = `<strong>INSIGHT DO MENTOR:</strong><br>${intel.mentor_advice}`;
+
+            } catch (error) {
+                mentor.innerHTML = "Erro na Sincronização. Verifique se as APIs estão ativas ou se a cota foi atingida.";
+                console.error(error);
+            } finally {
+                btn.disabled = false;
+            }
         }
 
-        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+        window.onload = initChart;
+        setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
     </script>
 </body>
 </html>
