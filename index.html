@@ -3,52 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SignalSync Pro • v11.5 Final</title>
-    
+    <title>SignalSync Pro • v11.8</title>
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
     <style>
-        :root { 
-            --bg: #030712; --card: rgba(17, 24, 39, 0.8); --accent: #00ff88; 
-            --red: #ff4b2b; --text: #f9fafb; --gold: #f59e0b; --blue: #3b82f6;
-            --gray: #1f2937; --border: rgba(255, 255, 255, 0.08); --glass: blur(16px);
-        }
-
+        :root { --bg: #030712; --accent: #00ff88; --red: #ff4b2b; --text: #f9fafb; --card: rgba(17, 24, 39, 0.8); --border: rgba(255, 255, 255, 0.08); --glass: blur(16px); }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; transition: all 0.3s; }
-
-        /* TELA DE CADASTRO (BLINDADA) */
-        #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
-        .auth-card { background: var(--card); padding: 40px; border-radius: 24px; border: 1px solid var(--accent); width: 90%; max-width: 400px; text-align: center; }
-        .auth-input { width: 100%; padding: 12px; margin: 10px 0; background: #0a0c15; border: 1px solid var(--border); border-radius: 8px; color: white; outline: none; }
-
-        /* NAVEGAÇÃO ADAPTATIVA */
-        .sidebar { width: 80px; background: rgba(0,0,0,0.8); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 15px; z-index: 1000; }
-        .nav-item { width: 55px; height: 55px; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; color: #6b7280; font-size: 9px; font-weight: 700; transition: 0.3s; }
-        .nav-item.active { background: rgba(0, 255, 136, 0.1); color: var(--accent); border: 1px solid rgba(0,255,136,0.2); }
-        .nav-item i { font-size: 20px; margin-bottom: 4px; }
-
-        /* APP CONTAINER */
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: row; overflow: hidden; }
+        .sidebar { width: 80px; background: rgba(0, 0, 0, 0.8); backdrop-filter: var(--glass); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 15px; z-index: 1000; }
+        .nav-item { width: 55px; height: 55px; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; color: #6b7280; font-size: 9px; font-weight: 700; }
+        .nav-item.active { background: rgba(0, 255, 136, 0.1); color: var(--accent); }
         .app-container { flex: 1; display: flex; flex-direction: column; min-width: 0; height: 100vh; }
-        .top-bar { height: 60px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.4); }
-
+        .top-bar { height: 60px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.4); border-bottom: 1px solid var(--border); }
         .main-stage { flex: 1; padding: 15px; overflow-y: auto; display: none; }
         .main-stage.active-page { display: block; }
-
-        /* GRIDS & CARDS */
         .grid-layout { display: grid; grid-template-columns: 1.6fr 1fr; gap: 15px; }
         .panel-card { background: var(--card); backdrop-filter: var(--glass); border-radius: 20px; border: 1px solid var(--border); padding: 20px; }
-
-        /* UI ELEMENTS */
         .aura-bar { height: 8px; background: #1f2937; border-radius: 4px; overflow: hidden; margin: 10px 0; }
-        .aura-fill { height: 100%; background: linear-gradient(90deg, var(--red), var(--gold), var(--accent)); transition: 1.5s cubic-bezier(0.19, 1, 0.22, 1); }
-        .terminal-box { background: #050811; border-radius: 12px; padding: 15px; font-family: 'JetBrains Mono'; font-size: 11px; line-height: 1.6; border: 1px solid var(--border); min-height: 120px; overflow-y: auto; }
-        .btn-primary { background: var(--accent); color: black; border: none; padding: 15px; border-radius: 12px; font-weight: 800; cursor: pointer; width: 100%; text-transform: uppercase; transition: 0.3s; }
-        .intel-badge { background: rgba(0, 255, 136, 0.1); color: var(--accent); padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; }
-
-        /* RESPONSIVIDADE MOBILE */
+        .aura-fill { height: 100%; background: linear-gradient(90deg, var(--red), var(--accent)); transition: 1.5s; width: 0%; }
+        .terminal-box { background: #050811; border-radius: 12px; padding: 15px; font-family: 'JetBrains Mono'; font-size: 11px; line-height: 1.6; border: 1px solid var(--border); min-height: 120px; }
+        .btn-sync { background: var(--accent); color: black; border: none; padding: 15px; border-radius: 12px; font-weight: 800; cursor: pointer; width: 100%; text-transform: uppercase; }
         @media (max-width: 900px) {
             body { flex-direction: column; }
             .sidebar { width: 100%; height: 70px; flex-direction: row; padding: 0 10px; justify-content: space-around; position: fixed; bottom: 0; border-right: none; border-top: 1px solid var(--border); }
@@ -57,163 +32,81 @@
         }
     </style>
 </head>
-<body id="main-body">
-
-    <div id="auth-screen">
-        <div class="auth-card">
-            <h2 style="color:var(--accent); margin-bottom: 20px;">CRIAR CONTA SNIPER</h2>
-            <input type="text" id="reg-nome" class="auth-input" placeholder="Nome Completo">
-            <input type="email" id="reg-email" class="auth-input" placeholder="E-mail">
-            <input type="password" id="reg-pass" class="auth-input" placeholder="Senha Institucional">
-            <button class="btn-primary" onclick="handleSignup()">CADASTRAR & ENTRAR</button>
-        </div>
-    </div>
-
+<body>
     <nav class="sidebar">
         <div class="nav-item active" data-page="dashboard"><i class="fas fa-home"></i><span>Home</span></div>
-        <div class="nav-item" data-page="chart"><i class="fas fa-chart-line"></i><span>Chart</span></div>
-        <div class="nav-item" data-page="risk"><i class="fas fa-calculator"></i><span>Risco</span></div>
         <div class="nav-item" data-page="mentor"><i class="fas fa-robot"></i><span>Mentor</span></div>
+        <div class="nav-item" data-page="risk"><i class="fas fa-calculator"></i><span>Risco</span></div>
     </nav>
-
     <div class="app-container">
         <header class="top-bar">
             <h1>SignalSync <span style="color:var(--accent)">PRO</span></h1>
-            <div id="current-pair-badge" class="intel-badge">FX:EURUSD</div>
-            <div id="live-clock" style="font-family:'JetBrains Mono'; font-size:12px; color:var(--accent);">00:00:00</div>
+            <div id="live-clock" style="font-family:'JetBrains Mono'; color:var(--accent);">00:00:00</div>
         </header>
-
         <main id="page-dashboard" class="main-stage active-page">
             <div class="grid-layout">
-                <div class="panel-card" style="padding:0; min-height:450px;"><div id="tv-main" style="height:100%;"></div></div>
+                <div class="panel-card" style="padding:0; min-height:400px;"><div id="tv-main" style="height:100%;"></div></div>
                 <div class="panel-card">
-                    <span class="intel-badge">Aura Intelligence</span>
-                    <h3 id="aura-label" style="color:var(--gold); margin:10px 0; font-size:14px;">Aguardando Sincronização...</h3>
-                    <div class="aura-bar"><div id="aura-fill" class="aura-fill" style="width:50%;"></div></div>
-                    <div style="margin-top:20px;">
-                        <span class="intel-badge">Trap Detection</span>
-                        <div id="mentor-summary" class="terminal-box" style="margin-top:10px;">Solicite análise para engenharia reversa.</div>
-                    </div>
-                    <button class="btn-primary" style="margin-top:20px;" onclick="runSignalSync()">Sincronizar IA Gemini</button>
+                    <h3 id="aura-label" style="color:var(--accent); margin-bottom:10px;">Aura Intelligence</h3>
+                    <div class="aura-bar"><div id="aura-fill" class="aura-fill"></div></div>
+                    <div id="mentor-summary" class="terminal-box" style="margin-top:20px;">Aguardando Sincronização IA...</div>
+                    <button class="btn-sync" style="margin-top:20px;" onclick="runSignalSync()">Sincronizar IA Gemini</button>
                 </div>
             </div>
         </main>
-
-        <main id="page-risk" class="main-stage">
-            <div class="panel-card" style="max-width:500px; margin:auto;">
-                <h3 style="color:var(--accent); margin-bottom:20px;">Calculadora Sniper ($50k Funded)</h3>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:15px;">
-                    <input type="number" id="risk-balance" class="auth-input" value="50000" placeholder="Saldo">
-                    <input type="number" id="risk-pct" class="auth-input" value="1" placeholder="Risco %">
-                    <input type="number" id="risk-sl" class="auth-input" placeholder="Stop Loss (Pips)">
-                    <select id="risk-asset" class="auth-input"><option value="10">EUR/GBP/USD</option><option value="1">GOLD (XAU)</option></select>
-                </div>
-                <button class="btn-primary" onclick="calculateLot()">CALCULAR LOTE</button>
-                <div id="risk-result" class="terminal-box" style="margin-top:20px; display:none; text-align:center;">
-                    <p style="font-size:10px; color:#6b7280;">LOTE RECOMENDADO</p>
-                    <h2 id="res-lote" style="color:var(--accent); font-size:28px;">0.00</h2>
-                </div>
-            </div>
-        </main>
-
         <main id="page-mentor" class="main-stage">
-            <div class="panel-card" style="height:100%; display:flex; flex-direction:column;">
-                <div id="mentor-chat-box" class="terminal-box" style="flex:1; margin-bottom:15px;">
-                    <div style="color:var(--accent);">[SISTEMA]: Mentor IA v11.5 Online. Analisando pegada institucional.</div>
-                </div>
-                <div style="display:flex; gap:10px;">
-                    <input type="text" id="mentor-input" class="auth-input" style="margin:0;" placeholder="Pergunte sobre o fluxo...">
-                    <button class="btn-primary" style="width:80px;" onclick="askMentor()">IR</button>
-                </div>
-            </div>
+            <div class="panel-card"><h3>Mentor IA Chat</h3><div id="mentor-chat" class="terminal-box" style="height:300px; overflow-y:auto;"></div></div>
+        </main>
+        <main id="page-risk" class="main-stage">
+            <div class="panel-card"><h3>Calculadora de Risco Sniper ($50k)</h3></div>
         </main>
     </div>
-
     <script>
         let currentPair = "FX:EURUSD";
-
-        // NAVEGAÇÃO
+        function switchPage(pageId) {
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.querySelectorAll('.main-stage').forEach(p => p.classList.remove('active-page'));
+            document.getElementById('page-' + pageId).classList.add('active-page');
+        }
         document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const page = item.dataset.page;
-                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-                document.querySelectorAll('.main-stage').forEach(p => p.classList.remove('active-page'));
-                document.getElementById(`page-${page}`).classList.add('active-page');
-                window.dispatchEvent(new Event('resize'));
-            });
+            item.addEventListener('click', () => switchPage(item.dataset.page));
         });
 
-        // CADASTRO (ENVIAR PARA SEU BANCO)
-        async function handleSignup() {
-            const nome = document.getElementById('reg-nome').value;
-            const email = document.getElementById('reg-email').value;
-            if(!nome || !email) return alert("Preencha os campos!");
-            
-            // Aqui entra seu fetch para o Supabase
-            document.getElementById('auth-screen').style.display = 'none';
-            initChart();
-        }
-
-        // CALCULADORA DE RISCO
-        function calculateLot() {
-            const bal = parseFloat(document.getElementById('risk-balance').value);
-            const pct = parseFloat(document.getElementById('risk-pct').value) / 100;
-            const sl = parseFloat(document.getElementById('risk-sl').value);
-            const pVal = parseFloat(document.getElementById('risk-asset').value);
-            
-            if(!sl) return alert("Insira o SL");
-            const lot = (bal * pct) / (sl * pVal);
-            document.getElementById('res-lote').innerText = lot.toFixed(2);
-            document.getElementById('risk-result').style.display = 'block';
-        }
-
-        // TRADINGVIEW
-        function initChart() {
-            new TradingView.widget({
-                "autosize": true, "symbol": currentPair, "interval": "15",
-                "theme": "dark", "container_id": "tv-main", "hide_side_toolbar": false,
-                "locale": "br", "studies": ["FibRetracement@tv-basicstudies"]
-            });
-        }
-
-        // MENTOR IA (CHAMADA VIA PONTE VERCEL)
+        // FUNÇÃO DE INTELIGÊNCIA COM A PONTE VERCEL
         async function runSignalSync() {
-            const label = document.getElementById('aura-label');
             const summary = document.getElementById('mentor-summary');
             const fill = document.getElementById('aura-fill');
-
-            label.innerText = "Consultando Ponte Vercel...";
-
+            const label = document.getElementById('aura-label');
+            
+            summary.innerHTML = "🔍 Consultando Ponte Segura Vercel...";
+            
             try {
-                // ROTA SEGURA QUE VOCÊ CRIOU NA VERCEL
                 const response = await fetch('/api/analyze', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                        prompt: `Aja como o Mentor IA do SignalSync Pro. Analise ${currentPair} para o Trader Fábio. 
-                                Responda em JSON: {"score": 0-100, "mood": "string", "advice": "string"}` 
+                        prompt: `Aja como o Mentor IA do SignalSync Pro. Analise ${currentPair}. Responda em JSON: {"score": 0-100, "mood": "string", "advice": "string"}` 
                     })
                 });
 
                 const data = await response.json();
-                // Extraindo o texto do Gemini
                 const rawText = data.candidates[0].content.parts[0].text;
                 const intel = JSON.parse(rawText.replace(/```json|```/g, ""));
 
-                label.innerText = intel.mood;
+                label.innerText = "Sentimento: " + intel.mood;
                 fill.style.width = intel.score + "%";
-                summary.innerHTML = `<div style="color:var(--accent);">[VEREDITO]:</div>${intel.advice}`;
+                summary.innerHTML = `<b>VEREDITO INSTITUCIONAL:</b><br>${intel.advice}`;
 
-            } catch(e) {
+            } catch (e) {
+                summary.innerHTML = "<span style='color:var(--red)'>Erro na Conexão. Verifique se você fez o REIMPLANTE na Vercel.</span>";
                 console.error(e);
-                label.innerText = "Erro na API: Verifique Vercel Logs";
-                summary.innerText = "Falha ao conectar com o Gemini 1.5. Verifique se a variável GEMINI_API_KEY está correta.";
             }
         }
 
-        setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
-        window.onload = () => { if(document.getElementById('auth-screen').style.display === 'none') initChart(); };
+        window.onload = () => {
+            new TradingView.widget({ "autosize": true, "symbol": currentPair, "interval": "15", "theme": "dark", "container_id": "tv-main" });
+            setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+        };
     </script>
 </body>
 </html>
