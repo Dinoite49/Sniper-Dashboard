@@ -1,89 +1,226 @@
-// ============================================================
-// ENGINE DE ENGENHARIA REVERSA: TRAP & LIQUIDITY DETECTION
-// ============================================
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SignalSync Pro • Institutional Suite v10.8</title>
+    
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-const InstitutionalEngine = {
-    // 1. Definição de Padrões de "Mão Forte"
-    patterns: {
-        SPRING: "Captura de liquidez abaixo de suporte seguida de reversão (Stop Run)",
-        UPTHRUST: "Falso rompimento de resistência para induzir compras e depois vender",
-        ABSORPTION: "Volume alto com pouco deslocamento de preço (Institucional segurando)",
-        MITIGATION: "Preço retorna para fechar ordens pendentes em um Order Block"
-    },
-
-    // 2. Função de Correlação Automática
-    async analyzeMarketContext(symbol, lastCandles, cvdData) {
-        let detectedPattern = "Consolidação Neutra";
-        let confidence = "Baixa";
-        
-        // Lógica de Engenharia Reversa (Simulada para processamento IA)
-        if (cvdData > 0 && lastCandles.trend === 'down') {
-            detectedPattern = this.patterns.ABSORPTION;
-            confidence = "Alta";
-        } else if (lastCandles.wickSize > lastCandles.bodySize && lastCandles.location === 'support') {
-            detectedPattern = this.patterns.SPRING;
-            confidence = "Muito Alta";
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        :root { 
+            --bg: #030712; --card: rgba(17, 24, 39, 0.8); --accent: #00ff88; 
+            --red: #ff4b2b; --text: #f9fafb; --gold: #f5b041; --blue: #2d7ee9;
+            --gray: #1f2937; --border: rgba(255, 255, 255, 0.08); --glass: blur(16px);
+            --bbg: #0a0c15;
         }
 
-        return {
-            pattern: detectedPattern,
-            confidence: confidence,
-            reasoning: `O Smart Money está utilizando a ${detectedPattern} para montar posição.`
-        };
-    }
-};
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bbg); color: var(--text); height: 100vh; overflow: hidden; display: flex; }
 
-// ============================================================
-// FUNÇÃO DO MENTOR: ANÁLISE AUTOMÁTICA
-// ============================================================
-async function runAutoInstitutionalAnalysis() {
-    const mentorDisplay = document.getElementById('mentor-full');
-    const pair = currentPair;
+        /* SIDEBAR */
+        .sidebar { 
+            width: 80px; background: rgba(0, 0, 0, 0.6); backdrop-filter: var(--glass);
+            border-right: 1px solid var(--border); display: flex; flex-direction: column; 
+            align-items: center; padding: 28px 0; gap: 12px; z-index: 100;
+        }
+        .nav-item {
+            width: 52px; height: 52px; border-radius: 18px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 4px; cursor: pointer; transition: 0.3s;
+            background: rgba(255, 255, 255, 0.02); color: #6b7280; font-size: 10px; font-weight: 600;
+        }
+        .nav-item i { font-size: 18px; }
+        .nav-item.active { background: rgba(0, 255, 136, 0.1); border-color: var(--accent); color: var(--accent); }
 
-    // Trigger visual de "Pensando"
-    mentorDisplay.innerHTML = `<div class="msg-ai">🔍 Executando Engenharia Reversa nos últimos 100 candles de ${pair}...</div>`;
+        /* APP CONTAINER */
+        .app-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .top-bar { 
+            height: 64px; padding: 0 24px; display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.3);
+        }
 
-    try {
-        // Prompt especializado em "Engenharia Reversa" para o Gemini
-        const prompt = `
-            Aja como um Engenheiro de Fluxo de Ordens. Analise o par ${pair}.
-            Identifique:
-            1. Onde as instituições criaram um "Trap" (Armadilha) recentemente?
-            2. O preço está mitigando um Order Block ou buscando Liquidez (BSL/SSL)?
-            3. Qual a correlação entre o volume atual e a agressividade institucional?
-            Responda em 3 pontos técnicos para o Trader Fábio.
-        `;
+        /* MAIN PAGES */
+        .main-stage { flex: 1; padding: 20px; display: none; height: 100%; overflow-y: auto; }
+        .main-stage.active-page { display: block; }
+        .grid-2 { display: grid; grid-template-columns: 1.6fr 1fr; gap: 20px; height: 100%; }
+        .panel-card { background: var(--card); backdrop-filter: var(--glass); border-radius: 24px; border: 1px solid var(--border); padding: 20px; margin-bottom: 20px; }
 
-        // Chamada para a API (usando a lógica de segurança v10.0)
-        const response = await fetch('/api/analyze', { // Certifique-se de usar o backend Vercel
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: prompt })
+        /* MENTOR CHAT & TRAP ENGINE */
+        .terminal-output { font-family: 'JetBrains Mono'; font-size: 12px; color: #d1d5db; height: 250px; overflow-y: auto; background: #050811; padding: 15px; border-radius: 12px; line-height: 1.6; border: 1px solid var(--border); }
+        .msg-ai { border-left: 3px solid var(--accent); padding-left: 10px; margin-bottom: 15px; }
+        .intel-badge { background: rgba(0, 255, 136, 0.1); color: var(--accent); padding: 2px 8px; border-radius: 6px; font-size: 9px; font-weight: 800; }
+        
+        .btn-sync { 
+            background: linear-gradient(135deg, var(--accent), var(--blue)); color: black; 
+            border: none; padding: 14px; border-radius: 12px; font-weight: 800; cursor: pointer; width: 100%;
+        }
+
+        /* FLOATING MENTOR */
+        .floating-mentor {
+            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+            background: linear-gradient(135deg, var(--accent), var(--blue));
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4); cursor: pointer; z-index: 1000;
+        }
+
+        .aura-fill { height: 100%; background: linear-gradient(90deg, var(--red), var(--gold), var(--accent)); transition: 1s; }
+        .aura-container { height: 8px; background: #1f2937; border-radius: 4px; overflow: hidden; margin: 10px 0; }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="nav-item active" data-page="dashboard"><i class="fas fa-home"></i><span>Home</span></div>
+        <div class="nav-item" data-page="chart"><i class="fas fa-chart-line"></i><span>Chart</span></div>
+        <div class="nav-item" data-page="mentor"><i class="fas fa-robot"></i><span>Mentor</span></div>
+        <div class="nav-item" data-page="terminal"><i class="fas fa-terminal"></i><span>Fluxo</span></div>
+        
+        <div style="margin-top:auto; padding-top:20px; border-top:1px solid var(--border); display:flex; flex-direction:column; gap:8px;">
+            <div class="nav-item" onclick="changePair('FX:EURUSD')">EU</div>
+            <div class="nav-item" onclick="changePair('FX:GBPUSD')">GU</div>
+            <div class="nav-item" onclick="changePair('BINANCE:BTCUSDT')">₿</div>
+        </div>
+    </nav>
+
+    <div class="app-container">
+        <header class="top-bar">
+            <h1>SignalSync <span style="color:var(--accent)">PRO</span></h1>
+            <div id="global-pair" class="intel-badge" style="font-size:14px; padding:6px 12px;">FX:EURUSD</div>
+            <div style="text-align:right; font-family:'JetBrains Mono'; font-size:12px;">
+                <div id="live-clock" style="color:var(--accent)">00:00:00</div>
+                <div id="live-date">2026-02-21</div>
+            </div>
+        </header>
+
+        <main id="page-dashboard" class="main-stage active-page">
+            <div class="grid-2">
+                <div class="panel-card" style="padding:0; overflow:hidden;"><div id="tv-dashboard" style="height:400px;"></div></div>
+                <div class="panel-card">
+                    <div style="font-size:11px; color:#9ca3af; margin-bottom:15px;">AURA SENTIMENT</div>
+                    <div id="aura-label" style="font-weight:800; color:var(--gold);">Analizando Psicologia...</div>
+                    <div class="aura-container"><div id="aura-fill" class="aura-fill" style="width:50%;"></div></div>
+                    
+                    <div style="margin-top:30px; font-size:11px; color:#9ca3af; margin-bottom:15px;">ENGENHARIA REVERSA (AUTO)</div>
+                    <div id="mentor-summary" class="terminal-output" style="height:150px;">Aguardando Sincronização...</div>
+                    <button class="btn-sync" style="margin-top:15px;" onclick="runSignalSync()">Sincronizar IA</button>
+                </div>
+            </div>
+        </main>
+
+        <main id="page-mentor" class="main-stage">
+            <div class="grid-2">
+                <div class="panel-card">
+                    <div style="font-size:11px; margin-bottom:15px;">CONVERSA COM MENTOR</div>
+                    <div id="mentor-chat-box" class="terminal-output" style="height:400px;">
+                        <div class="msg-ai">Olá Fábio. Sou seu Copiloto. Como posso analisar o Smart Money para você agora?</div>
+                    </div>
+                    <div style="margin-top:15px; display:flex; gap:10px;">
+                        <input id="mentor-input" type="text" placeholder="Pergunte sobre Traps ou Liquidez..." style="flex:1; background:#0a0c15; border:1px solid var(--border); padding:12px; border-radius:8px; color:white;">
+                        <button class="btn-sync" style="width:80px;" onclick="askMentor()">Enviar</button>
+                    </div>
+                </div>
+                <div class="panel-card">
+                    <div style="font-size:11px; margin-bottom:15px;">CHECKLIST INSTITUCIONAL</div>
+                    <div id="checklist-content" style="font-size:13px; line-height:2;">
+                        </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="floating-mentor" onclick="document.querySelector('[data-page=mentor]').click()"><i class="fas fa-robot" style="color:black;"></i></div>
+
+    <script>
+        let currentPair = 'FX:EURUSD';
+        const CONFIG = { USE_BACKEND: false, LOCAL_KEY: 'SUA_CHAVE_AQUI' };
+
+        // NAVEGAÇÃO
+        document.querySelectorAll('.nav-item[data-page]').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                document.querySelectorAll('.main-stage').forEach(p => p.classList.remove('active-page'));
+                document.getElementById(`page-${item.dataset.page}`).classList.add('active-page');
+            });
         });
 
-        const data = await response.json();
-        const analysis = data.candidates[0].content.parts[0].text;
+        function changePair(p) {
+            currentPair = p;
+            document.getElementById('global-pair').innerText = p;
+            initDashboardChart();
+        }
 
-        // Salva na aba de "Análises Automáticas" e apresenta ao usuário
-        presentAnalysis(analysis, pair);
+        function initDashboardChart() {
+            new TradingView.widget({
+                "autosize": true, "symbol": currentPair, "interval": "15",
+                "theme": "dark", "container_id": "tv-dashboard", "style": "1",
+                "locale": "br", "studies": ["FibRetracement@tv-basicstudies"]
+            });
+        }
 
-    } catch (error) {
-        mentorDisplay.innerHTML = "<div class='msg-ai'>Sincronizando dados locais... Padrão sugerido: Absorção em 0.618 Fib.</div>";
-    }
-}
+        // ENGINE DE ENGENHARIA REVERSA & SYNC
+        async function runSignalSync() {
+            const summary = document.getElementById('mentor-summary');
+            const auraFill = document.getElementById('aura-fill');
+            const auraLabel = document.getElementById('aura-label');
+            
+            summary.innerHTML = "<div class='msg-ai'>🔍 Escaneando Order Blocks e piscinas de liquidez (BSL/SSL)...</div>";
 
-function presentAnalysis(text, pair) {
-    const mentorDisplay = document.getElementById('mentor-full');
-    const timestamp = new Date().toLocaleTimeString();
-    
-    mentorDisplay.innerHTML = `
-        <div class="msg-ai">
-            <span class="intel-badge">ENGENHARIA REVERSA @ ${timestamp}</span><br><br>
-            ${text.replace(/\n/g, '<br>')}
-            <br>
-            <div style="margin-top:10px; padding:10px; background:rgba(0,255,136,0.05); border-radius:8px; font-size:11px;">
-                💡 <b>Insight Cognito:</b> Institucionais estão induzindo o varejo ao erro neste nível. Aguarde o fechamento do candle de 15min.
-            </div>
-        </div>
-    `;
-}
+            // Simulação de resposta com a lógica v10.8
+            setTimeout(() => {
+                const score = 72;
+                auraFill.style.width = score + "%";
+                auraLabel.innerText = "EUFORIA INSTITUCIONAL (72%)";
+                summary.innerHTML = `
+                    <div class="msg-ai">
+                        <span class="intel-badge">TRAP DETECTED</span><br>
+                        Identificado <b>Stop Run</b> abaixo de 1.1020. O varejo foi induzido a vender no rompimento falso. <br><br>
+                        <b>Momento:</b> Acumulação de Smart Money detectada no CVD. <br>
+                        <b>Alvo:</b> Liquidez em 1.1085.
+                    </div>
+                `;
+            }, 2000);
+        }
+
+        async function askMentor() {
+            const input = document.getElementById('mentor-input');
+            const chat = document.getElementById('mentor-chat-box');
+            if(!input.value) return;
+
+            chat.innerHTML += `<div style="text-align:right; margin-bottom:10px; color:var(--blue); font-size:12px;">${input.value}</div>`;
+            const q = input.value; input.value = '';
+
+            chat.innerHTML += `<div class="msg-ai" id="ai-typing">Mentor está analisando o fluxo...</div>`;
+            
+            // Simulação de resposta inteligente
+            setTimeout(() => {
+                document.getElementById('ai-typing').remove();
+                chat.innerHTML += `
+                    <div class="msg-ai">
+                        <b>Análise Sniper:</b> Para ${currentPair}, sua dúvida sobre "${q}" faz sentido. No gráfico de 15min, as instituições estão mitigando um Order Block de ontem. O volume sugere que a "mão forte" não quer deixar o preço cair mais.
+                    </div>
+                `;
+                chat.scrollTop = chat.scrollHeight;
+            }, 1500);
+        }
+
+        // Checklist Institucional
+        const pillars = [
+            "✅ Open Interest Positivo (Dinheiro novo entrando)",
+            "✅ CVD Divergente (Preço cai, mas compras aumentam)",
+            "✅ Liquidity Gap (FVG aberto acima)",
+            "✅ POC Mensal atuando como suporte",
+            "✅ Descorrelação com o DXY"
+        ];
+        document.getElementById('checklist-content').innerHTML = pillars.map(p => `<div>${p}</div>`).join('');
+
+        window.onload = () => {
+            initDashboardChart();
+            setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+        };
+    </script>
+</body>
+</html>
