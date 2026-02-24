@@ -1,6 +1,5 @@
-// api/analyze.js
 export default async function handler(req, res) {
-    const apiKey = process.env.GEMINI_API_KEY; // Ele busca a chave que você salvou na imagem 3
+    const apiKey = process.env.GEMINI_API_KEY;
     const { prompt } = req.body;
 
     try {
