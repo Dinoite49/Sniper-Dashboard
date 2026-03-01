@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SignalSync Pro • Vortex Edition v13.0</title>
+    <title>SignalSync Pro • v13.5 Official</title>
     
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -18,268 +18,192 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; }
-
-        /* --- UI COMPONENTS (VORTEX STYLE) --- */
-        .glowing-card { 
-            background: var(--card); border: 1px solid var(--border); border-radius: 20px; 
-            backdrop-filter: var(--glass); position: relative; overflow: hidden;
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        
+        /* ESTRUTURA BASE ADAPTATIVA */
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: row; /* Desktop Default */
+            overflow: hidden; 
+            transition: all 0.3s ease;
         }
-        .glowing-card:hover { border-color: var(--accent); box-shadow: 0 0 20px var(--accent-glow); }
 
-        .btn-vortex { 
-            background: linear-gradient(135deg, #00E5FF, #007AFF); color: #000; 
-            border: none; padding: 14px 24px; border-radius: 12px; font-weight: 800; 
-            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
-            transition: 0.3s; width: 100%; text-transform: uppercase; letter-spacing: 0.5px;
+        /* --- MODO MOBILE FORÇADO --- */
+        body.mobile-view { flex-direction: column !important; }
+        body.mobile-view .sidebar { 
+            width: 100% !important; height: 70px !important; flex-direction: row !important; 
+            position: fixed !important; bottom: 0 !important; border-right: none !important; 
+            border-top: 1px solid var(--border) !important; padding: 0 10px !important; justify-content: space-around !important;
         }
-        .btn-vortex:disabled { opacity: 0.5; filter: grayscale(1); }
+        body.mobile-view .sidebar span, body.mobile-view .logo-area { display: none !important; }
+        body.mobile-view .app-main { height: calc(100vh - 70px) !important; }
+        body.mobile-view .grid-layout { grid-template-columns: 1fr !important; }
 
-        .badge-status { padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
-        .badge-buy { background: rgba(0, 255, 136, 0.15); color: var(--green); border: 1px solid var(--green); }
-        .badge-sell { background: rgba(255, 59, 59, 0.15); color: var(--red); border: 1px solid var(--red); }
-
-        /* --- LAYOUT STRUCTURE --- */
+        /* --- SIDEBAR --- */
         .sidebar { 
             width: 260px; background: #080808; border-right: 1px solid var(--border); 
             display: flex; flex-direction: column; padding: 25px; gap: 10px; z-index: 100;
         }
         .nav-link { 
             display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 12px;
-            color: #666; cursor: pointer; transition: 0.3s; font-weight: 600;
+            color: #666; cursor: pointer; transition: 0.3s; font-weight: 600; text-decoration: none;
         }
         .nav-link:hover, .nav-link.active { background: rgba(255,255,255,0.03); color: var(--accent); }
 
-        .app-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+        /* --- CONTEÚDO --- */
+        .app-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .top-header { 
             height: 70px; border-bottom: 1px solid var(--border); display: flex; 
             align-items: center; justify-content: space-between; padding: 0 30px; background: rgba(5,5,5,0.8);
         }
 
-        .credit-pill { background: rgba(0, 229, 255, 0.1); border: 1px solid var(--accent); color: var(--accent); padding: 6px 15px; border-radius: 100px; font-size: 12px; font-weight: 700; }
+        .glowing-card { 
+            background: var(--card); border: 1px solid var(--border); border-radius: 20px; 
+            backdrop-filter: var(--glass); padding: 20px; transition: 0.3s;
+        }
+        .grid-layout { display: grid; grid-template-columns: 1.8fr 1fr; gap: 20px; }
 
-        /* --- CONTENT AREAS --- */
-        .content-scroll { flex: 1; padding: 25px; overflow-y: auto; display: none; }
-        .active-content { display: block; }
-
-        .signal-feed { height: 100%; display: flex; flex-direction: column; gap: 12px; }
-        .signal-item { 
-            background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; 
-            display: flex; justify-content: space-between; align-items: center; border-left: 3px solid var(--accent);
+        .btn-sync { 
+            background: linear-gradient(135deg, #00E5FF, #007AFF); color: #000; 
+            border: none; padding: 16px; border-radius: 14px; font-weight: 800; cursor: pointer; width: 100%;
         }
 
-        /* --- MOBILE ADAPTABILITY --- */
+        /* --- CHAVE DE ALTERAÇÃO (TOGGLE) --- */
+        .view-switcher {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            padding: 8px 12px; border-radius: 10px; color: var(--accent); cursor: pointer;
+            font-size: 12px; display: flex; align-items: center; gap: 8px;
+        }
+
         @media (max-width: 900px) {
-            .sidebar { width: 70px; padding: 15px 5px; }
-            .sidebar span, .sidebar .logo-text { display: none; }
-            .grid-layout { display: flex; flex-direction: column; }
-            .top-header { padding: 0 15px; }
+            body:not(.desktop-force) { flex-direction: column; }
+            body:not(.desktop-force) .sidebar { width: 100%; height: 70px; flex-direction: row; position: fixed; bottom: 0; border-right: none; border-top: 1px solid var(--border); justify-content: space-around; padding: 0 10px; }
+            body:not(.desktop-force) .sidebar span, body:not(.desktop-force) .logo-area { display: none; }
+            body:not(.desktop-force) .grid-layout { grid-template-columns: 1fr; }
         }
     </style>
 </head>
-<body>
+<body id="app-body">
 
     <div id="auth-screen" style="position:fixed; inset:0; background:var(--bg); z-index:9999; display:flex; align-items:center; justify-content:center;">
-        <div class="glowing-card" style="width:90%; max-width:400px; padding:40px;">
-            <h1 style="font-size:28px; font-weight:800; margin-bottom:10px;">VORTEX <span style="color:var(--accent)">PRO</span></h1>
-            <p style="color:#666; font-size:14px; margin-bottom:30px;">Entre com suas credenciais de Sniper.</p>
-            <input type="text" id="user-name" class="auth-input" placeholder="Seu Nome" style="width:100%; padding:15px; background:#111; border:1px solid var(--border); border-radius:12px; color:white; margin-bottom:15px;">
-            <input type="text" id="user-whatsapp" class="auth-input" placeholder="+55 (00) 00000-0000" style="width:100%; padding:15px; background:#111; border:1px solid var(--border); border-radius:12px; color:white; margin-bottom:20px;">
-            <button class="btn-vortex" onclick="startApp()">Acessar Plataforma</button>
+        <div class="glowing-card" style="width:90%; max-width:400px; text-align:center;">
+            <h1 style="font-weight:800; margin-bottom:10px;">SIGNALSYNC <span style="color:var(--accent)">PRO</span></h1>
+            <p style="font-size:12px; color:#666; margin-bottom:25px;">Módulo Sniper v13.5 Oficial</p>
+            <button class="btn-sync" onclick="startApp()">Acessar Terminal</button>
         </div>
     </div>
 
     <aside class="sidebar">
-        <div class="logo-text" style="font-weight:800; font-size:20px; color:var(--text); margin-bottom:40px;">SIGNAL<span style="color:var(--accent)">SYNC</span></div>
-        <div class="nav-link active" onclick="showTab('dashboard')"><i class="fas fa-th-large"></i><span>Dashboard</span></div>
-        <div class="nav-link" onclick="showTab('feed')"><i class="fas fa-broadcast-tower"></i><span>Feed Global</span></div>
-        <div class="nav-link" onclick="showTab('plans')"><i class="fas fa-shopping-cart"></i><span>Planos</span></div>
-        <div class="nav-link" onclick="showTab('affiliate')"><i class="fas fa-users"></i><span>Afiliados</span></div>
+        <div class="logo-area" style="font-weight:800; font-size:20px; margin-bottom:40px;">SIGNAL<span style="color:var(--accent)">SYNC</span></div>
+        <div class="nav-link active" data-tab="dashboard"><i class="fas fa-chart-pie"></i><span>Dashboard</span></div>
+        <div class="nav-link" data-tab="signals"><i class="fas fa-bolt"></i><span>Sinais Pro</span></div>
+        <div class="nav-link" data-tab="risk"><i class="fas fa-calculator"></i><span>Risco Sniper</span></div>
+        <div class="nav-link" data-tab="account"><i class="fas fa-user-shield"></i><span>Minha Conta</span></div>
     </aside>
 
     <main class="app-main">
         <header class="top-header">
-            <div id="pair-selector" class="credit-pill" style="cursor:pointer" onclick="changeAsset()">BTC/USDT <i class="fas fa-chevron-down"></i></div>
-            <div style="display:flex; gap:15px; align-items:center;">
-                <div class="credit-pill" id="user-credits">120 CRÉDITOS</div>
-                <div id="live-clock" style="font-family:'JetBrains Mono'; font-size:12px;">00:00:00</div>
+            <div style="display:flex; align-items:center; gap:15px;">
+                <div class="view-switcher" onclick="toggleView()">
+                    <i class="fas fa-mobile-alt" id="view-icon"></i> <span id="view-text">Alternar Visão</span>
+                </div>
+            </div>
+            <div style="display:flex; gap:20px; align-items:center;">
+                <div style="background:rgba(0,229,255,0.1); color:var(--accent); padding:5px 12px; border-radius:100px; font-size:11px; font-weight:700;">120 CRÉDITOS</div>
+                <div id="live-clock" style="font-family:'JetBrains Mono'; font-size:12px; color:var(--accent);">00:00:00</div>
             </div>
         </header>
 
-        <div id="tab-dashboard" class="content-scroll active-content">
-            <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px;" class="grid-layout">
-                
-                <div class="glowing-card" style="min-height:500px; padding:0;">
+        <div id="tab-dashboard" class="main-stage" style="padding:20px; overflow-y:auto; flex:1;">
+            <div class="grid-layout">
+                <div class="glowing-card" style="padding:0; min-height:500px; overflow:hidden;">
                     <div id="tv-main-chart" style="height:100%; width:100%;"></div>
                 </div>
 
-                <div class="glowing-card" style="padding:25px; display:flex; flex-direction:column; gap:20px;">
-                    <div style="text-align:center;">
-                        <span class="badge-status badge-buy" id="ai-mood">AGUARDANDO</span>
-                        <h2 id="ai-score" style="font-size:40px; font-weight:800; margin-top:10px;">--%</h2>
-                        <p style="font-size:12px; color:#666;">CONFIDENÇA DA ANÁLISE</p>
+                <div class="glowing-card">
+                    <div style="text-align:center; margin-bottom:25px;">
+                        <span style="background:rgba(0,255,136,0.1); color:var(--green); padding:4px 10px; border-radius:5px; font-size:10px; font-weight:800;">IA SIGNALSYNC PRO</span>
+                        <h2 id="aura-score" style="font-size:45px; font-weight:800; margin:10px 0;">--%</h2>
+                        <p id="aura-mood" style="color:var(--gold); font-size:12px; font-weight:600;">Sincronizando com o Mercado...</p>
                     </div>
 
-                    <div id="analysis-results" style="display:none;">
-                        <div class="terminal-box" id="ai-summary" style="margin-bottom:15px; font-size:12px; border-left:2px solid var(--accent); padding-left:10px;"></div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                            <div class="glowing-card" style="padding:10px; text-align:center;">
-                                <span style="font-size:10px; color:#666;">ENTRY</span><br><b id="res-entry" style="color:var(--accent);">--</b>
-                            </div>
-                            <div class="glowing-card" style="padding:10px; text-align:center;">
-                                <span style="font-size:10px; color:#666;">STOP LOSS</span><br><b id="res-sl" style="color:var(--red);">--</b>
-                            </div>
-                        </div>
+                    <div id="analysis-box" class="terminal-box" style="background:#000; padding:15px; border-radius:12px; font-size:11px; font-family:'JetBrains Mono'; border:1px solid var(--border); margin-bottom:20px; min-height:150px;">
+                        Aguardando comando do Sniper...
                     </div>
 
-                    <button class="btn-vortex" id="btn-analyze" onclick="performVortexAnalysis()">
-                        <i class="fas fa-bolt"></i> ANALISAR AGORA (1 CRÉDITO)
+                    <button class="btn-sync" onclick="runSignalSync()">
+                        <i class="fas fa-brain"></i> ANALISAR AGORA (1 CRÉDITO)
                     </button>
-                </div>
-            </div>
-
-            <div class="glowing-card" style="margin-top:20px; padding:20px;">
-                <h3 style="margin-bottom:15px; font-size:14px;"><i class="fas fa-fire" style="color:var(--red)"></i> Mapa de Calor de Volatilidade (H-24)</h3>
-                <div id="heatmap-container" style="display:grid; grid-template-columns: repeat(24, 1fr); gap:4px; height:40px;">
-                    </div>
-            </div>
-        </div>
-
-        <div id="tab-feed" class="content-scroll">
-            <h2 style="margin-bottom:20px;">Sinais em Tempo Real</h2>
-            <div class="signal-feed" id="live-signals">
-                </div>
-        </div>
-
-        <div id="tab-plans" class="content-scroll">
-            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:20px;">
-                <div class="glowing-card" style="padding:30px; text-align:center;">
-                    <h3>BÁSICO</h3>
-                    <h2 style="margin:20px 0; font-size:32px;">R$ 97<span style="font-size:14px; color:#666;">/mês</span></h2>
-                    <ul style="list-style:none; font-size:13px; color:#aaa; margin-bottom:30px; line-height:2;">
-                        <li>120 Créditos/Mês</li>
-                        <li>Análise de Cripto</li>
-                        <li>Mentor Básico</li>
-                    </ul>
-                    <button class="btn-vortex">Assinar Agora</button>
-                </div>
-                <div class="glowing-card" style="padding:30px; text-align:center; border-color:var(--accent);">
-                    <div style="background:var(--accent); color:#000; font-size:10px; font-weight:800; padding:4px; border-radius:4px; margin-bottom:10px;">MAIS POPULAR</div>
-                    <h3>INTERMEDIÁRIO</h3>
-                    <h2 style="margin:20px 0; font-size:32px;">R$ 197<span style="font-size:14px; color:#666;">/mês</span></h2>
-                    <ul style="list-style:none; font-size:13px; color:#aaa; margin-bottom:30px; line-height:2;">
-                        <li>720 Créditos/Mês</li>
-                        <li>Análise Wyckoff PRO</li>
-                        <li>Suporte Telegram</li>
-                    </ul>
-                    <button class="btn-vortex">Assinar Agora</button>
                 </div>
             </div>
         </div>
     </main>
 
     <script>
-        let credits = 120;
-        let currentSymbol = "BINANCE:BTCUSDT";
+        let currentPair = "FX:EURUSD";
 
-        // --- CORE FUNCTIONS ---
         function startApp() {
-            const name = document.getElementById('user-name').value;
-            if(!name) return alert("Diga-nos seu nome de Sniper!");
             document.getElementById('auth-screen').style.display = 'none';
-            initTradingView();
-            initHeatmap();
-            generateFakeFeed();
+            initChart();
         }
 
-        function showTab(tabId) {
-            document.querySelectorAll('.content-scroll').forEach(t => t.classList.remove('active-content'));
-            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-            document.getElementById('tab-' + tabId).classList.add('active-content');
-            event.currentTarget.classList.add('active');
+        // --- ALTERNADOR DE VISÃO (CHAVE) ---
+        function toggleView() {
+            const body = document.getElementById('app-body');
+            const icon = document.getElementById('view-icon');
+            const text = document.getElementById('view-text');
+
+            if (body.classList.contains('mobile-view')) {
+                body.classList.remove('mobile-view');
+                body.classList.add('desktop-force');
+                icon.className = "fas fa-desktop";
+                text.innerText = "Modo Desktop Ativo";
+            } else {
+                body.classList.add('mobile-view');
+                body.classList.remove('desktop-force');
+                icon.className = "fas fa-mobile-alt";
+                text.innerText = "Modo Mobile Ativo";
+            }
+            // Força o resize do gráfico do TradingView
+            window.dispatchEvent(new Event('resize'));
         }
 
-        function initTradingView() {
+        function initChart() {
             new TradingView.widget({
-                "autosize": true, "symbol": currentSymbol, "interval": "15",
+                "autosize": true, "symbol": currentPair, "interval": "15",
                 "theme": "dark", "style": "1", "container_id": "tv-main-chart",
-                "hide_side_toolbar": false, "enable_publishing": false, "locale": "br"
+                "locale": "br", "hide_side_toolbar": false
             });
         }
 
-        async function performVortexAnalysis() {
-            if(credits <= 0) return alert("Créditos insuficientes! Recarregue seu plano.");
-            
-            const btn = document.getElementById('btn-analyze');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> CALCULANDO...';
+        async function runSignalSync() {
+            const box = document.getElementById('analysis-box');
+            const score = document.getElementById('aura-score');
+            const mood = document.getElementById('aura-mood');
 
-            // Chamada para a nossa Ponte Vercel
+            box.innerHTML = "🔍 Conectando à ponte segura SignalSync Pro v13.5...";
+            
             try {
                 const response = await fetch('/api/analyze', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        prompt: `Analise o par ${currentSymbol} agora. Estilo Vortex IA. Responda APENAS um JSON: {"score": 0-100, "sentiment": "COMPRA/VENDA", "entry": 0.0, "sl": 0.0, "summary": "string"}`
+                    body: JSON.stringify({ 
+                        prompt: `Aja como o Mentor SignalSync Pro. Analise o par ${currentPair}. Identifique se há Trap ou Liquidez. Responda em JSON: {"score": 0-100, "mood": "string", "advice": "string"}` 
                     })
                 });
-
                 const data = await response.json();
                 const intel = JSON.parse(data.candidates[0].content.parts[0].text.replace(/```json|```/g, ""));
 
-                // Update UI
-                credits--;
-                document.getElementById('user-credits').innerText = `${credits} CRÉDITOS`;
-                document.getElementById('ai-score').innerText = intel.score + "%";
-                document.getElementById('ai-mood').innerText = intel.sentiment;
-                document.getElementById('ai-mood').className = `badge-status ${intel.sentiment === 'COMPRA' ? 'badge-buy' : 'badge-sell'}`;
-                document.getElementById('ai-summary').innerText = intel.summary;
-                document.getElementById('res-entry').innerText = intel.entry;
-                document.getElementById('res-sl').innerText = intel.sl;
-                document.getElementById('analysis-results').style.display = 'block';
+                score.innerText = intel.score + "%";
+                mood.innerText = intel.mood;
+                box.innerHTML = `<b>[ANÁLISE SNIPER]:</b><br>${intel.advice}`;
 
-                addSignalToFeed(currentSymbol, intel.sentiment);
-
-            } catch (error) {
-                alert("Erro na conexão neural.");
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-bolt"></i> ANALISAR AGORA (1 CRÉDITO)';
+            } catch(e) {
+                box.innerHTML = "❌ Erro: Verifique a conexão com a Vercel.";
             }
-        }
-
-        // --- UI UTILS ---
-        function initHeatmap() {
-            const container = document.getElementById('heatmap-container');
-            for(let i=0; i<24; i++) {
-                const div = document.createElement('div');
-                const opacity = Math.random();
-                div.style.background = `rgba(0, 229, 255, ${opacity})`;
-                div.style.borderRadius = "4px";
-                div.title = `Volatilidade às ${i}h: ${(opacity*100).toFixed(0)}%`;
-                container.appendChild(div);
-            }
-        }
-
-        function addSignalToFeed(pair, type) {
-            const feed = document.getElementById('live-signals');
-            const item = document.createElement('div');
-            item.className = 'signal-item';
-            item.innerHTML = `
-                <div><b>${pair}</b> <span style="font-size:10px; color:#666; margin-left:10px;">${new Date().toLocaleTimeString()}</span></div>
-                <span class="badge-status ${type === 'COMPRA' ? 'badge-buy' : 'badge-sell'}">${type}</span>
-            `;
-            feed.prepend(item);
-        }
-
-        function generateFakeFeed() {
-            const pairs = ['BTC/USDT', 'ETH/USDT', 'EUR/USD', 'GOLD'];
-            setInterval(() => {
-                if(Math.random() > 0.7) {
-                    addSignalToFeed(pairs[Math.floor(Math.random()*pairs.length)], Math.random() > 0.5 ? 'COMPRA' : 'VENDA');
-                }
-            }, 5000);
         }
 
         setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
